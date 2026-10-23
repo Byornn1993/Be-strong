@@ -8,6 +8,7 @@ import { UpdatePrompt } from '@/components/layout/UpdatePrompt';
 
 // Lazy loading per route
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
+const NewPasswordPage = lazy(() => import('@/features/auth/NewPasswordPage'));
 const ProfilePage = lazy(() => import('@/features/profile/ProfilePage'));
 const GoalsPage = lazy(() => import('@/features/profile/GoalsPage'));
 const HistoryPage = lazy(() => import('@/features/history/HistoryPage'));
@@ -45,6 +46,7 @@ export default function App() {
         <Suspense fallback={<Spinner />}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/nieuw-wachtwoord" element={<NewPasswordPage />} />
             <Route element={<Protected />}>
               <Route index element={<Navigate to="/profile" replace />} />
               <Route path="/profile" element={<ProfilePage />} />
