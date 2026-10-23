@@ -23,7 +23,7 @@ export function useExercise(id: string | undefined) {
 }
 
 export function useExercisePref(exerciseId: string | undefined) {
-  return useLiveQuery(async () => (exerciseId ? ((await getDb().exercisePrefs.where('exerciseId').equals(exerciseId).first()) ?? null) : null), [exerciseId]);
+  return useLiveQuery(async () => (exerciseId ? ((await getDb().exercisePrefs.toArray()).find((p) => p.exerciseId === exerciseId) ?? null) : null), [exerciseId]);
 }
 
 export function useExercisePrefs() {
@@ -32,7 +32,10 @@ export function useExercisePrefs() {
 
 /** Alle niet-verwijderde workouts, nieuwste eerst. */
 export function useWorkouts(): Workout[] | undefined {
-  return useLiveQuery(async () => (await getDb().workouts.orderBy('startedAt').reverse().toArray()).filter((w) => !w.deletedAt), []);
+  return useLiveQuery(
+    async () => (await getDb().workouts.toArray()).filter((w) => !w.deletedAt).sort((a, b) => Date.parse(b.startedAt) - Date.parse(a.startedAt)),
+    [],
+  );
 }
 
 export function useWorkout(id: string | undefined) {
@@ -48,11 +51,14 @@ export function useTemplate(id: string | undefined) {
 }
 
 export function useMeasurementTypes() {
-  return useLiveQuery(async () => (await getDb().measurementTypes.orderBy('sortOrder').toArray()).filter((t) => !t.deletedAt), []);
+  return useLiveQuery(async () => (await getDb().measurementTypes.toArray()).filter((t) => !t.deletedAt).sort((a, b) => a.sortOrder - b.sortOrder), []);
 }
 
 export function useMeasurements() {
-  return useLiveQuery(async () => (await getDb().measurements.orderBy('measuredAt').toArray()).filter((m) => !m.deletedAt), []);
+  return useLiveQuery(
+    async () => (await getDb().measurements.toArray()).filter((m) => !m.deletedAt).sort((a, b) => Date.parse(a.measuredAt) - Date.parse(b.measuredAt)),
+    [],
+  );
 }
 
 export function useGoals() {
@@ -60,7 +66,7 @@ export function useGoals() {
 }
 
 export function useWidgets() {
-  return useLiveQuery(async () => (await getDb().widgets.orderBy('position').toArray()).filter((w) => !w.deletedAt), []);
+  return useLiveQuery(async () => (await getDb().widgets.toArray()).filter((w) => !w.deletedAt).sort((a, b) => a.position - b.position), []);
 }
 
 export function useProfile() {
@@ -72,7 +78,7 @@ export function useOutboxCount() {
 }
 
 export function useOutbox() {
-  return useLiveQuery(() => getDb().outbox.orderBy('seq').toArray(), []);
+  return useLiveQuery(async () => (await getDb().outbox.toArray()).sort((a, b) => a.seq! - b.seq!), []);
 }
 
 export function useConflicts() {

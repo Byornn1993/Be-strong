@@ -29,10 +29,16 @@ async function run(): Promise<void> {
     });
   } catch (e) {
     const network = e instanceof RemoteError && e.network;
+    const msg = e instanceof Error ? e.message : String(e);
+    const storage = /UnknownError|Unable to open cursor|Indexed ?Database|IDB/i.test(`${(e as { name?: string })?.name ?? ''} ${msg}`);
     setSyncStatus({
       phase: network ? 'offline' : 'error',
       online: !network,
-      error: network ? null : e instanceof Error ? e.message : String(e),
+      error: network
+        ? null
+        : storage
+          ? `De opslag op dit toestel gaf een fout (${msg}). Probeer opnieuw, of kies hieronder “Lokale kopie opnieuw opbouwen”.`
+          : msg,
     });
   }
 }

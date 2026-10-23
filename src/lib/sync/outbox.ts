@@ -12,7 +12,9 @@ type NewOp =
  * Moet binnen een Dexie-transactie op `db.outbox` aangeroepen worden (samen met de lokale wijziging).
  */
 export async function enqueue(db: BeStrongDb, op: NewOp): Promise<void> {
-  const existing = await db.outbox.where('key').equals(op.key).first();
+  // Bewust zonder IndexedDB-cursors (first/orderBy/uniqueKeys): iOS Safari geeft daar soms
+  // "UnknownError: Unable to open cursor". getAll-gebaseerde reads zijn betrouwbaar.
+  const existing = (await db.outbox.toArray()).find((o) => o.key === op.key);
   const now = new Date().toISOString();
   if (existing && existing.seq !== undefined && existing.kind === op.kind) {
     const merged: OutboxOp =
@@ -39,6 +41,5 @@ export async function ack(db: BeStrongDb, op: OutboxOp): Promise<boolean> {
 }
 
 export async function pendingKeys(db: BeStrongDb): Promise<Set<string>> {
-  const keys = await db.outbox.orderBy('key').uniqueKeys();
-  return new Set(keys as string[]);
+  return new Set((await db.outbox.toArray()).map((o) => o.key));
 }

@@ -125,7 +125,7 @@ export async function pull(db: BeStrongDb, api: RemoteApi): Promise<{ pulled: nu
 export async function push(db: BeStrongDb, api: RemoteApi): Promise<{ pushed: number; blockedBy: OutboxOp | null }> {
   let pushed = 0;
   const conflicted = new Set((await db.conflicts.toCollection().primaryKeys()) as string[]);
-  const ops = await db.outbox.orderBy('seq').toArray();
+  const ops = (await db.outbox.toArray()).sort((a, b) => a.seq! - b.seq!);
   for (const op of ops) {
     // Een entiteit in conflict wacht op de keuze van de gebruiker. Alles daarna ook,
     // want latere operaties kunnen ervan afhangen.
@@ -163,7 +163,7 @@ export async function resolveConflict(db: BeStrongDb, key: string, choice: 'mine
   await db.transaction('rw', [table, db.conflicts, db.outbox], async () => {
     if (choice === 'server') {
       await table.put(c.remote);
-      await db.outbox.where('key').equals(key).delete();
+      await db.outbox.bulkDelete((await db.outbox.toArray()).filter((o) => o.key === key).map((o) => o.seq!));
     } else {
       // Onze versie wordt nu gebaseerd op de laatste serverversie.
       await table.update(c.entityId, { serverUpdatedAt: c.remoteUpdatedAt });

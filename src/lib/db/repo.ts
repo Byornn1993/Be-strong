@@ -44,7 +44,7 @@ export async function saveExercisePref(exerciseId: string, patch: Partial<Pick<E
   const db = getDb();
   const uid = requireUserId();
   await db.transaction('rw', db.exercisePrefs, db.outbox, async () => {
-    const cur = await db.exercisePrefs.where('exerciseId').equals(exerciseId).first();
+    const cur = (await db.exercisePrefs.toArray()).find((p) => p.exerciseId === exerciseId);
     const pref: ExercisePref = cur
       ? { ...cur, ...patch }
       : { id: newId(), exerciseId, notes: null, restSec: null, serverUpdatedAt: null, deletedAt: null, ...patch };

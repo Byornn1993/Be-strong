@@ -7,7 +7,8 @@ import { Spinner } from '@/components/ui/States';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { SyncIndicator } from '@/components/layout/SyncIndicator';
 import { useConflicts, useOutbox } from '@/lib/db/hooks';
-import { getDb } from '@/lib/db/schema';
+import Dexie from 'dexie';
+import { closeDb, getDb } from '@/lib/db/schema';
 import { resolveConflict } from '@/lib/sync/engine';
 import { flushSync } from '@/lib/sync/scheduler';
 import { useSyncStatus } from '@/lib/sync/status';
@@ -45,7 +46,52 @@ export default function SyncPage() {
   const { confirm, dialog } = useConfirm();
   const [syncing, setSyncing] = useState(false);
 
-  if (!outbox || !conflicts) return <Spinner />;
+  // Lokale kopie wissen en opnieuw ophalen uit Supabase. Ook bruikbaar als IndexedDB op dit toestel
+  // in een foutieve toestand zit (bv. "Unable to open cursor" op iOS). Je blijft ingelogd.
+  const rebuild = async () => {
+    let pending = 0;
+    try {
+      pending = await getDb().outbox.count();
+    } catch {
+      pending = -1; // database onleesbaar
+    }
+    const ok = await confirm({
+      title: 'Lokale kopie opnieuw opbouwen?',
+      message:
+        pending > 0
+          ? `Let op: ${pending} wijziging(en) op dit toestel zijn nog niet verstuurd en gaan verloren. Alles wat al in Supabase staat, wordt opnieuw opgehaald.`
+          : 'De gegevens op dit toestel worden gewist en opnieuw uit Supabase opgehaald. Je blijft ingelogd.',
+      confirmLabel: 'Opnieuw opbouwen',
+      danger: pending > 0,
+    });
+    if (!ok) return;
+    const name = getDb().name;
+    closeDb();
+    await Dexie.delete(name).catch(() => {});
+    window.location.reload();
+  };
+
+  const rebuildCard = (
+    <Card className="space-y-2 p-4">
+      <p className="font-semibold">Problemen op dit toestel?</p>
+      <p className="text-sm text-muted">Ontbreekt er data of zie je een foutmelding? Bouw de lokale kopie opnieuw op vanuit Supabase.</p>
+      <Button block onClick={rebuild}>
+        Lokale kopie opnieuw opbouwen
+      </Button>
+    </Card>
+  );
+
+  if (!outbox || !conflicts)
+    return (
+      <div>
+        <PageHeader title="Synchronisatie" back="/settings" />
+        <div className="space-y-4 px-4 md:px-0">
+          <Spinner />
+          {rebuildCard}
+        </div>
+        {dialog}
+      </div>
+    );
 
   return (
     <div>
@@ -125,7 +171,7 @@ export default function SyncPage() {
                           const db = getDb();
                           await db.outbox.delete(op.seq!);
                           // Volledige pull, zodat de lokale kopie weer gelijk loopt met de server.
-                          await db.meta.where('key').startsWith('cursor:').delete();
+                          await db.meta.bulkDelete((await db.meta.toArray()).filter((m) => m.key.startsWith('cursor:')).map((m) => m.key));
                           void flushSync().catch(() => {});
                         }
                       }}
@@ -138,6 +184,7 @@ export default function SyncPage() {
             </Card>
           )}
         </section>
+        {rebuildCard}
       </div>
       {dialog}
     </div>
