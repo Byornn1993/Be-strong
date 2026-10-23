@@ -4,7 +4,7 @@ import { join } from 'node:path';
 
 // Minimale nabootsing van wat Supabase levert: auth.users, auth.uid() en de rollen.
 // auth.uid() leest, net als in Supabase, de 'sub' uit de JWT-claims van het request.
-const AUTH_STUB = `
+export const AUTH_STUB = `
 create schema if not exists auth;
 create table auth.users (id uuid primary key, email text);
 create or replace function auth.uid() returns uuid language sql stable as $$

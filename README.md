@@ -73,10 +73,9 @@ Het project **Be Strong** bestaat al. Gebruik regio Frankfurt (zoals Finance), m
    npx supabase db push                                   # past supabase/migrations/* toe
    ```
 
-   **B. SQL Editor in het dashboard** — open de bestanden in `supabase/migrations/` **in volgorde**
-   (op bestandsnaam) en voer ze één voor één uit:
-   `…000100_schema.sql`, `…000200_standard_exercises.sql`, `…000300_rls.sql`, `…000400_rpc.sql`,
-   `…000500_measurement_types.sql`.
+   **B. SQL Editor in het dashboard (eenvoudigst)** — plak `supabase/setup-productie.sql` (alle
+   migraties samen, gegenereerd met `npm run gen:setup-sql`) in de SQL Editor en klik *Run*.
+   Stap voor stap uitgelegd in [STAPPENPLAN.md](STAPPENPLAN.md).
 
    Controle: Table Editor toont 13 tabellen met een slotje (RLS aan); `exercises` bevat 111 standaardoefeningen.
 

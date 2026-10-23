@@ -14,7 +14,8 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "gen:exercises": "node scripts/gen-exercises.mjs",
-    "gen:icons": "node scripts/gen-icons.mjs"
+    "gen:icons": "node scripts/gen-icons.mjs",
+    "gen:setup-sql": "node scripts/gen-setup-sql.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "6.1.0",
