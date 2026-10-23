@@ -5,6 +5,7 @@ import { Logo } from '@/components/Logo';
 import { ErrorBoundary, Spinner } from '@/components/ui/States';
 import { ActiveWorkoutBar } from './ActiveWorkoutBar';
 import { SyncIndicator } from './SyncIndicator';
+import { useSyncStatus } from '@/lib/sync/status';
 import { useActiveWorkout } from '@/features/workout/WorkoutProvider';
 import { ActiveWorkoutSheet } from '@/features/workout/ActiveWorkoutSheet';
 
@@ -65,6 +66,7 @@ function NavItem({ to, label, icon: Icon, primary, variant }: { to: string; labe
 export function AppShell({ children }: { children?: ReactNode }) {
   const { active, sheetOpen } = useActiveWorkout();
   const location = useLocation();
+  const sync = useSyncStatus();
 
   return (
     <div className="min-h-dvh md:flex" style={{ paddingLeft: 'var(--safe-left)', paddingRight: 'var(--safe-right)' }}>
@@ -92,6 +94,11 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
       <div className="min-w-0 flex-1">
         <div className="md:hidden" style={{ paddingTop: 'var(--safe-top)' }} />
+        {!sync.online && (
+          <div className="flex justify-center border-b border-warn/20 bg-warn/10 md:hidden">
+            <SyncIndicator />
+          </div>
+        )}
         <main
           className="mx-auto w-full max-w-6xl md:px-8 md:pb-10"
           style={{ paddingBottom: `calc(var(--nav-h) + var(--safe-bottom) + ${active ? '64px' : '16px'})` }}

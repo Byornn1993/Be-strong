@@ -43,7 +43,9 @@ export function FinishSheet({
   const counts = countSets(active);
   const preview = useMemo(() => toFinishedWorkout(active, { keepUnchecked, note: null }, new Date()), [active, keepUnchecked]);
   const prs = useMemo(() => detectNewPrs(preview, history), [preview, history]);
-  const changed = template ? differsFromTemplate(preview, template) : false;
+  // Vergelijk de structuur van de workout (oefeningen, volgorde, aantal sets) met de template.
+  // Niet-afgevinkte sets weggooien telt dus niet als "gewijzigd".
+  const changed = template ? differsFromTemplate(active, template) : false;
 
   const finish = async () => {
     if (busy) return; // dubbel tikken
@@ -52,7 +54,7 @@ export function FinishSheet({
     try {
       await flush();
       const w = await finishActive(active.id, { keepUnchecked, note: note.trim() || null });
-      if (template && changed && updateTemplate) await saveTemplate(templateFromWorkout(template, w));
+      if (template && changed && updateTemplate) await saveTemplate(templateFromWorkout(template, active));
       clearAfterFinish();
       navigate(`/history/${w.id}?finished=1`);
     } catch (e) {

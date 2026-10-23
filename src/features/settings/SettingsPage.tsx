@@ -13,6 +13,7 @@ import { saveProfile, saveTemplate } from '@/lib/db/repo';
 import { closeDb, getDb } from '@/lib/db/schema';
 import { requireUserId } from '@/lib/db/session';
 import { flushSync } from '@/lib/sync/scheduler';
+import type { Profile } from '@/lib/db/types';
 import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { requestNotificationPermission } from '@/features/workout/alerts';
@@ -115,7 +116,7 @@ export default function SettingsPage() {
       <div className="grid gap-4 px-4 md:grid-cols-2 md:px-0">
         <Card className="space-y-3 p-4">
           <p className="font-semibold">Profiel</p>
-          <ProfileForm key={profile.serverUpdatedAt ?? 'local'} />
+          <ProfileForm key={profile.serverUpdatedAt ?? 'local'} profile={profile} />
           <p className="text-xs text-muted">Ingelogd als {session?.user.email}</p>
         </Card>
 
@@ -177,8 +178,7 @@ export default function SettingsPage() {
   );
 }
 
-function ProfileForm() {
-  const profile = useProfile()!;
+function ProfileForm({ profile }: { profile: Profile }) {
   const [name, setName] = useState(profile.displayName ?? '');
   const [avatar, setAvatar] = useState(profile.avatarUrl ?? '');
   const [rest, setRest] = useState(String(profile.defaultRestSec));

@@ -20,11 +20,16 @@ interface SheetProps {
 export function Sheet({ open, onClose, title, action, children, footer, full }: SheetProps) {
   const titleId = useId();
   const panel = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  useEffect(() => {
+    closeRef.current = onClose;
+  }, [onClose]);
 
+  // Alleen bij openen/sluiten: focus naar het paneel. Niet bij elke render (anders steelt het de focus).
   useEffect(() => {
     if (!open) return;
     const prev = document.activeElement as HTMLElement | null;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closeRef.current();
     window.addEventListener('keydown', onKey);
     const overflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -34,7 +39,7 @@ export function Sheet({ open, onClose, title, action, children, footer, full }: 
       document.body.style.overflow = overflow;
       prev?.focus?.();
     };
-  }, [open, onClose]);
+  }, [open]);
 
   if (!open) return null;
 

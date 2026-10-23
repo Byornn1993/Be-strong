@@ -129,7 +129,7 @@ export default function HistoryPage() {
   const workouts = useWorkouts();
   const [params, setParams] = useSearchParams();
   const view = (params.get('view') as 'list' | 'calendar') ?? 'list';
-  const { start } = useActiveWorkout();
+  const { start, active } = useActiveWorkout();
   const [limit, setLimit] = useState(30);
 
   const grouped = useMemo(() => {
@@ -168,9 +168,11 @@ export default function HistoryPage() {
             title="Nog geen workouts"
             text="Je afgeronde workouts verschijnen hier."
             action={
-              <Button variant="primary" onClick={() => start(newActiveWorkout('Workout', new Date()))}>
-                Start je eerste workout
-              </Button>
+              !active && (
+                <Button variant="primary" onClick={() => start(newActiveWorkout('Workout', new Date()))}>
+                  Start je eerste workout
+                </Button>
+              )
             }
           />
         ) : view === 'calendar' ? (
