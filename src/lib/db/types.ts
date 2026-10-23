@@ -205,4 +205,6 @@ export interface RestTimerState {
   endsAt: number;
   totalSec: number;
   workoutExerciseId: string | null;
+  /** Set waarna de rustbalk getoond wordt. */
+  afterSetId?: string | null;
 }

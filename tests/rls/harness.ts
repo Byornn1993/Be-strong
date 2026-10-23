@@ -34,7 +34,7 @@ export async function createDb(): Promise<PGlite> {
 
 /** Voert sql uit als ingelogde gebruiker (rol authenticated + JWT-claim), binnen een transactie. */
 export async function asUser<T>(db: PGlite, userId: string | null, fn: (tx: Tx) => Promise<T>): Promise<T> {
-  return db.transaction(async (tx) => {
+  return (await db.transaction(async (tx) => {
     if (userId) {
       await tx.query(`select set_config('request.jwt.claims', $1, true)`, [JSON.stringify({ sub: userId, role: 'authenticated' })]);
       await tx.exec('set local role authenticated');
@@ -42,7 +42,7 @@ export async function asUser<T>(db: PGlite, userId: string | null, fn: (tx: Tx) 
       await tx.exec('set local role anon');
     }
     return fn(tx);
-  });
+  })) as T;
 }
 
 export type Tx = Parameters<Parameters<PGlite['transaction']>[0]>[0];

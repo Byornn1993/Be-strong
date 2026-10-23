@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "templates": [
+    {
+      "key": "upper",
+      "name": "Upper",
+      "exercises": [
+        { "name": "Bench Press (Dumbbell)", "sets": 4 },
+        { "name": "Chin Up", "sets": 3 },
+        { "name": "Bent Over Row (Dumbbell)", "sets": 3 },
+        { "name": "Cable Crossover", "sets": 3 },
+        { "name": "Seated Row (Machine)", "sets": 3 },
+        { "name": "Chest Press (Machine)", "sets": 3 },
+        { "name": "Crunch (Machine)", "sets": 4 },
+        { "name": "Shoulder Press (Machine)", "sets": 3 }
+      ]
+    },
+    {
+      "key": "only-upper-1",
+      "name": "Only Upper 1",
+      "exercises": [
+        { "name": "Chest Press (Machine)", "sets": 3 },
+        { "name": "Upright Row (Cable)", "sets": 3 },
+        { "name": "Lat Pulldown (Machine)", "sets": 3 },
+        { "name": "Iso-Lateral Chest Press (Machine)", "sets": 3 },
+        { "name": "Bicep Curl (Dumbbell)", "sets": 3 },
+        { "name": "Triceps Pushdown (Cable - Straight Bar)", "sets": 3 }
+      ]
+    },
+    {
+      "key": "only-upper-2",
+      "name": "Only Upper 2",
+      "exercises": [
+        { "name": "Chest Press (Machine)", "sets": 3 },
+        { "name": "Shoulder Press (Machine)", "sets": 3 },
+        { "name": "Iso-Lateral Chest Press (Machine)", "sets": 3 },
+        { "name": "Preacher Curl (Machine)", "sets": 3 },
+        { "name": "Triceps Pushdown (Cable - Straight Bar)", "sets": 3 },
+        { "name": "Crunch (Machine)", "sets": 4 }
+      ]
+    },
+    {
+      "key": "lower-dag-1",
+      "name": "Lower Dag 1",
+      "exercises": [
+        { "name": "Squat (Barbell)", "sets": 4 },
+        { "name": "Stiff Leg Deadlift (Barbell)", "sets": 4 },
+        { "name": "Hip Abductor (Machine)", "sets": 3 },
+        { "name": "Hack Squat", "sets": 4 },
+        { "name": "Standing Calf Raise (Dumbbell)", "sets": 5 },
+        { "name": "Crunch (Machine)", "sets": 4 },
+        { "name": "Sled Push", "sets": 3 },
+        { "name": "Leg Extension (Machine)", "sets": 3 }
+      ]
+    },
+    {
+      "key": "lower-dag-2",
+      "name": "Lower Dag 2",
+      "exercises": [
+        { "name": "Seated Calf Raise (Plate Loaded)", "sets": 4 },
+        { "name": "Standing Calf Raise (Dumbbell)", "sets": 4 },
+        { "name": "Lying Leg Curl (Machine)", "sets": 3 },
+        { "name": "Lunge (Dumbbell)", "sets": 3 },
+        { "name": "Front Squat (Barbell)", "sets": 3 },
+        { "name": "Trap Bar Deadlift", "sets": 4 },
+        { "name": "Stiff Leg Deadlift (Barbell)", "sets": 4 },
+        { "name": "Torso Rotation (Machine)", "sets": 4 }
+      ]
+    },
+    {
+      "key": "armdag",
+      "name": "Armdag",
+      "exercises": [
+        { "name": "Hammer Curl (Dumbbell)", "sets": 3 },
+        { "name": "Triceps Pushdown (Cable - Straight Bar)", "sets": 3 },
+        { "name": "Bicep Curl (Cable)", "sets": 3 },
+        { "name": "Skullcrusher (Barbell)", "sets": 3 },
+        { "name": "Preacher Curl (Barbell)", "sets": 3 },
+        { "name": "Triceps Extension", "sets": 3 }
+      ]
+    }
+  ]
+}

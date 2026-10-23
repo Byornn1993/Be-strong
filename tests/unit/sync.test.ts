@@ -90,7 +90,7 @@ describe('outbox', () => {
     const ops = await db.outbox.orderBy('seq').toArray();
     expect(ops).toHaveLength(2);
     expect(ops[0]).toMatchObject({ key: `measurements:${m.id}`, version: 2 });
-    expect((ops[0] as { row: { value: number } }).row.value).toBe(81);
+    expect(ops[0]!.kind === 'upsert' && ops[0]!.row.value).toBe(81);
   });
 
   it('een wijziging tijdens het versturen gaat niet verloren', async () => {

@@ -120,7 +120,7 @@ export function toggleSupersetWithNext<T extends { id: string; supersetGroup: st
   if (!cur || !next) return list;
   if (cur.supersetGroup && cur.supersetGroup === next.supersetGroup) {
     // Ontkoppelen: de volgende oefening (en wat erop volgt in dezelfde groep) krijgt een nieuwe/geen groep.
-    return list.map((e, k) => (k > i && e.supersetGroup === cur.supersetGroup ? { ...e, supersetGroup: null } : e)).map((e, k, arr) => {
+    return list.map((e, k) => (k > i && e.supersetGroup === cur.supersetGroup ? { ...e, supersetGroup: null } : e)).map((e, _k, arr) => {
       // Een groep van één is geen superset.
       const g = e.supersetGroup;
       if (!g) return e;
@@ -146,7 +146,11 @@ export function nextOpenSet(w: ActiveWorkout, weId: string, setId: string): { we
 export function countSets(w: Pick<ActiveWorkout, 'exercises'>): { done: number; open: number } {
   let done = 0;
   let open = 0;
-  for (const we of w.exercises) for (const s of we.sets) s.completed ? done++ : open++;
+  for (const we of w.exercises)
+    for (const s of we.sets) {
+      if (s.completed) done++;
+      else open++;
+    }
   return { done, open };
 }
 
