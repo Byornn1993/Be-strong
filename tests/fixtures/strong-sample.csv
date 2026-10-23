@@ -1,0 +1,15 @@
+Date,Workout Name,Duration,Exercise Name,Set Order,Weight,Reps,Distance,Seconds,RPE
+2024-03-04 23:30:00,"Upper ",1h 5m,"Chin Up",1,80.0,10.0,0,0.0,
+2024-03-04 23:30:00,"Upper ",1h 5m,"Chin Up",2,80.0,8.0,0,0.0,
+2024-03-04 23:30:00,"Upper ",1h 5m,"Chin Up",Rest Timer,0,0.0,0,120.0,
+2024-03-04 23:30:00,"Upper ",1h 5m,"Chest press Machine ",1,50.0,12.0,0,0.0,
+2024-03-04 23:30:00,"Upper ",1h 5m,"Chest press Machine ",2,55.0,10.0,0,0.0,
+2024-03-04 23:30:00,"Upper ",1h 5m,"Bicep Puldown",1,16.5,10.0,0,0.0,
+2024-03-04 23:30:00,"Upper ",1h 5m,"Triceps Pushdown (Cable - Straight Bar)",1,20.0,12.0,0,0.0,8
+2024-03-10 10:00:00,"Leg Day ",47s,"Squat (Barbell)",1,80.0,15.0,0,0.0,
+2024-03-10 10:00:00,"Leg Day ",47s,"Squat (Barbell)",2,80.0,14.0,0,0.0,
+2024-03-10 10:00:00,"Leg Day ",47s,"Sled Push ",1,0,0.0,0,4.0,
+2024-03-10 10:00:00,"Leg Day ",47s,"Walking",1,0,0.0,1.3,16.0,
+2024-03-10 10:00:00,"Leg Day ",47s,"Plank",1,0,0.0,0,60.0,
+2024-03-10 10:00:00,"Leg Day ",47s,"Crunch",1,80.0,10.0,0,0.0,
+2024-03-12 09:00:00,"Vergeten",117h 28m,"Squat (Barbell)",1,90.0,5.0,0,0.0,
