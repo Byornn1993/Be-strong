@@ -1,0 +1,22 @@
+node_modules
+dist
+dist-ssr
+*.local
+.env
+.env.*
+!.env.example
+coverage
+playwright-report
+test-results
+.vite
+supabase/.temp
+supabase/.branches
+
+# Persoonlijke referentiebestanden in de projectmap: NOOIT committen
+/*.png
+/*.jpeg
+/*.jpg
+/*.pdf
+/strong_workouts.csv
+/bjorn-finance-export*.json
+/reference/
