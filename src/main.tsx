@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@fontsource-variable/inter';
 import './index.css';
+import './lib/installPrompt';
 import App from './App';
 
 // Vraag persistente opslag aan, zodat de browser de lokale data (en een lopende workout) niet zomaar opruimt.

@@ -9,6 +9,7 @@ import { Spinner } from '@/components/ui/States';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { SyncIndicator } from '@/components/layout/SyncIndicator';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { InstallCard } from '@/components/InstallCard';
 import { useExercises, useOutboxCount, useProfile } from '@/lib/db/hooks';
 import { saveProfile, saveTemplate } from '@/lib/db/repo';
 import { closeDb, getDb } from '@/lib/db/schema';
@@ -156,6 +157,8 @@ export default function SettingsPage() {
             <Button onClick={async () => setNotif(await requestNotificationPermission())}>Meldingen toestaan</Button>
           )}
         </Card>
+
+        <InstallCard />
 
         <PasswordCard />
 
