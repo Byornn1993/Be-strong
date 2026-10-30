@@ -75,19 +75,19 @@ export function Widget({ kind, d }: { kind: WidgetKind; d: WidgetData }) {
       const ws = workoutsThisWeek(d.workouts, d.now);
       return (
         <Card className="p-4">
-          <p className="text-xs text-muted">Trainingstijd</p>
-          <p className="mt-1 text-2xl font-semibold">{formatDuration(ws.reduce((s, w) => s + w.durationSec, 0))}</p>
-          <p className="text-xs text-faint">deze week · {ws.length} workout{ws.length === 1 ? '' : 's'}</p>
+          <p className="label">Trainingstijd</p>
+          <p className="num mt-1 text-2xl font-semibold">{formatDuration(ws.reduce((s, w) => s + w.durationSec, 0))}</p>
+          <p className="text-xs text-muted">deze week · {ws.length} workout{ws.length === 1 ? '' : 's'}</p>
         </Card>
       );
     }
     case 'workouts_this_month': {
       const n = workoutsInMonth(d.workouts, d.now).length;
       return (
-        <Card className="p-4">
-          <p className="text-xs text-muted">Workouts</p>
-          <p className="mt-1 text-2xl font-semibold">{n}</p>
-          <p className="text-xs text-faint">deze maand</p>
+        <Card className="kpi-hero p-4">
+          <p className="label text-accent">Workouts</p>
+          <p className="num mt-1 text-2xl font-semibold text-accent">{n}</p>
+          <p className="text-xs text-muted">deze maand</p>
         </Card>
       );
     }
@@ -150,8 +150,8 @@ export function Widget({ kind, d }: { kind: WidgetKind; d: WidgetData }) {
                     <span className="truncate">{g.title || p.label}</span>
                     <span className="text-muted">{formatInt(p.ratio * 100)}%</span>
                   </div>
-                  <div className="mt-1 h-2 rounded-full bg-surface-2">
-                    <div className="h-2 rounded-full bg-accent" style={{ width: `${p.ratio * 100}%` }} />
+                  <div className="bar mt-1.5">
+                    <span style={{ width: `${p.ratio * 100}%` }} />
                   </div>
                 </div>
               );

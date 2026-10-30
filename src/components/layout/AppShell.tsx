@@ -2,6 +2,7 @@ import { Suspense, type ReactNode } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Dumbbell, History, Plus, Ruler, Settings, User } from 'lucide-react';
 import { Logo } from '@/components/Logo';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { ErrorBoundary, Spinner } from '@/components/ui/States';
 import { ActiveWorkoutBar } from './ActiveWorkoutBar';
 import { SyncIndicator } from './SyncIndicator';
@@ -17,48 +18,48 @@ const NAV = [
   { to: '/measure', label: 'Metingen', icon: Ruler },
 ] as const;
 
-function NavItem({ to, label, icon: Icon, primary, variant }: { to: string; label: string; icon: typeof User; primary?: boolean; variant: 'bottom' | 'side' }) {
-  if (variant === 'bottom') {
-    return (
-      <NavLink
-        to={to}
-        className={({ isActive }) => `flex min-h-[48px] flex-1 flex-col items-center justify-center gap-0.5 text-[10.5px] font-medium ${isActive ? 'text-accent' : 'text-muted'}`}
-      >
-        {({ isActive }) =>
-          primary ? (
-            <>
-              <span className={`flex h-9 w-12 items-center justify-center rounded-xl ${isActive ? 'bg-accent text-accent-ink' : 'bg-primary text-accent'}`}>
-                <Icon size={22} strokeWidth={2.5} />
-              </span>
-              {label}
-            </>
-          ) : (
-            <>
-              <Icon size={22} />
-              {label}
-            </>
-          )
-        }
-      </NavLink>
-    );
-  }
+type Item = { to: string; label: string; icon: typeof User; primary?: boolean };
+
+/** Onderste menu (mobiel): actief = witte tekst + gouden icoon. "Start" is een ronde gouden knop. */
+function BottomItem({ to, label, icon: Icon, primary }: Item) {
+  return (
+    <NavLink to={to} className="flex min-h-[48px] flex-1 flex-col items-center justify-center gap-0.5 text-[10.5px] font-medium">
+      {({ isActive }) =>
+        primary ? (
+          <>
+            <span className="-mt-3 flex h-12 w-12 items-center justify-center rounded-full bg-accent text-accent-ink shadow-gold">
+              <Icon size={24} strokeWidth={2.4} />
+            </span>
+            <span className={isActive ? 'text-text' : 'text-muted'}>{label}</span>
+          </>
+        ) : (
+          <>
+            <Icon size={21} strokeWidth={2} className={isActive ? 'text-accent' : 'text-muted'} />
+            <span className={isActive ? 'text-text' : 'text-muted'}>{label}</span>
+          </>
+        )
+      }
+    </NavLink>
+  );
+}
+
+/** Zijbalk (desktop): actief = gouden zachte achtergrond, gouden streep links en gouden icoon. */
+function SideItem({ to, label, icon: Icon, primary }: Item) {
   return (
     <NavLink
       to={to}
       className={({ isActive }) =>
-        `flex min-h-[44px] items-center gap-3 rounded-xl px-3 text-sm font-medium transition md:flex-col md:justify-center md:gap-1 md:px-1 md:py-2 md:text-[11px] lg:flex-row lg:justify-start lg:gap-3 lg:px-3 lg:text-sm ${
-          primary
-            ? isActive
-              ? 'bg-accent text-accent-ink'
-              : 'bg-primary text-accent hover:brightness-110'
-            : isActive
-              ? 'bg-surface-2 text-text'
-              : 'text-muted hover:bg-surface hover:text-text'
+        `flex min-h-[44px] items-center gap-3 rounded-sm2 px-3 text-sm font-medium transition-colors duration-150 ${
+          isActive ? 'bg-primary text-text shadow-[inset_3px_0_0_var(--accent)]' : 'text-muted hover:bg-champ/[0.07] hover:text-text'
         }`
       }
     >
-      <Icon size={20} />
-      <span>{primary ? 'Start workout' : label}</span>
+      {({ isActive }) => (
+        <>
+          <Icon size={19} strokeWidth={2} className={isActive || primary ? 'text-accent' : ''} />
+          <span>{primary ? 'Start workout' : label}</span>
+        </>
+      )}
     </NavLink>
   );
 }
@@ -69,38 +70,37 @@ export function AppShell({ children }: { children?: ReactNode }) {
   const sync = useSyncStatus();
 
   return (
-    <div className="min-h-dvh md:flex" style={{ paddingLeft: 'var(--safe-left)', paddingRight: 'var(--safe-right)' }}>
-      {/* Zijbalk: rail op tablet, volledige zijbalk op desktop */}
-      <aside className="sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-border bg-bg px-2 py-4 md:flex md:w-[88px] lg:w-[240px] lg:px-4">
-        <div className="mb-6 flex items-center gap-3 px-1 md:justify-center lg:justify-start">
-          <Logo size={36} />
-          <div className="hidden lg:block">
-            <p className="font-bold leading-tight">
-              Be <span className="text-accent">Strong</span>
-            </p>
-            <p className="text-[11px] text-muted">Stronger than yesterday.</p>
+    <div className="min-h-dvh desk:flex" style={{ paddingLeft: 'var(--safe-left)', paddingRight: 'var(--safe-right)' }}>
+      {/* Zijbalk vanaf 900px */}
+      <aside className="sticky top-0 hidden h-dvh w-[240px] shrink-0 flex-col border-r border-line-2 bg-side px-4 py-5 desk:flex">
+        <div className="mb-7 flex items-center gap-3 px-1">
+          <Logo size={38} />
+          <div>
+            <p className="font-bold leading-tight tracking-tight">Be Strong</p>
+            <p className="text-[11.5px] text-muted">Stronger than yesterday.</p>
           </div>
         </div>
         <nav className="flex flex-col gap-1" aria-label="Hoofdnavigatie">
           {NAV.map((n) => (
-            <NavItem key={n.to} {...n} variant="side" />
+            <SideItem key={n.to} {...n} />
           ))}
         </nav>
-        <div className="mt-auto flex flex-col gap-2">
+        <div className="mt-auto flex flex-col gap-1">
           <SyncIndicator />
-          <NavItem to="/settings" label="Instellingen" icon={Settings} variant="side" />
+          <ThemeToggle />
+          <SideItem to="/settings" label="Instellingen" icon={Settings} />
         </div>
       </aside>
 
       <div className="min-w-0 flex-1">
-        <div className="md:hidden" style={{ paddingTop: 'var(--safe-top)' }} />
+        <div className="desk:hidden" style={{ paddingTop: 'var(--safe-top)' }} />
         {!sync.online && (
-          <div className="flex justify-center border-b border-warn/20 bg-warn/10 md:hidden">
+          <div className="flex justify-center border-b border-warn/20 bg-warn/10 desk:hidden">
             <SyncIndicator />
           </div>
         )}
         <main
-          className="mx-auto w-full max-w-6xl md:px-8 md:pb-10"
+          className="mx-auto w-full max-w-6xl desk:px-8"
           style={{ paddingBottom: `calc(var(--nav-h) + var(--safe-bottom) + ${active ? '64px' : '16px'})` }}
         >
           <ErrorBoundary key={location.pathname}>
@@ -111,14 +111,14 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
       {active && !sheetOpen && <ActiveWorkoutBar />}
 
-      {/* Onderste navigatie op mobiel */}
+      {/* Onderste menu onder 900px */}
       <nav
         aria-label="Hoofdnavigatie"
-        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-border bg-bg/95 backdrop-blur md:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line-2 bg-side desk:hidden"
         style={{ paddingBottom: 'var(--safe-bottom)', height: 'calc(var(--nav-h) + var(--safe-bottom))' }}
       >
         {NAV.map((n) => (
-          <NavItem key={n.to} {...n} variant="bottom" />
+          <BottomItem key={n.to} {...n} />
         ))}
       </nav>
 

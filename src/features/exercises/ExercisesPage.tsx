@@ -47,12 +47,12 @@ export default function ExercisesPage() {
           </Button>
         }
       />
-      <div className="sticky top-0 z-10 space-y-2 bg-bg/95 px-4 pb-2 pt-1 backdrop-blur md:px-0">
+      <div className="sticky top-0 z-10 space-y-2 bg-bg/95 px-4 pb-2 pt-1 backdrop-blur desk:px-0">
         <label className="relative block">
           <Search size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-faint" />
           <input className="field pl-10" placeholder="Zoek op naam" value={q} onChange={(e) => setQ(e.target.value)} />
         </label>
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:px-0">
+        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap desk:px-0">
           <Chip active={!muscle} onClick={() => setMuscle(null)}>
             Alle spiergroepen
           </Chip>
@@ -92,7 +92,7 @@ export default function ExercisesPage() {
       ) : list.length === 0 ? (
         <EmptyState title="Geen oefeningen gevonden" text="Pas je filters aan of maak een eigen oefening." />
       ) : (
-        <ul className="grid gap-x-4 px-2 md:grid-cols-2 md:px-0 xl:grid-cols-3">
+        <ul className="grid gap-x-4 px-2 md:grid-cols-2 desk:px-0 xl:grid-cols-3">
           {list.map((e) => (
             <li key={e.id}>
               <Link to={`/exercises/${e.id}`} className="flex min-h-[60px] items-center gap-3 rounded-xl px-2 py-2 hover:bg-surface">

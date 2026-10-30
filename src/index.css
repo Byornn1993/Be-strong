@@ -2,29 +2,123 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Design tokens ─────────────────────────────────────────────
-   Diep antraciet, donkergroen als primaire kleur, mint voor actie/CTA. Geen blauw. */
+/* ── Bjorn huisstijl — design tokens ─────────────────────────────
+   Deep Black #101418 · Slate Blue #2C3E50 · Muted Gold #B08D57 · Champagne #DCC9A6 · Warm White #FBF6EE
+   Componenten gebruiken ALLEEN deze variabelen (via Tailwind: bg-surface, text-accent, …). */
+
+/* Donker thema = standaard */
 :root {
-  --bg: #0a0d0c;
-  --surface: #121715;
-  --surface-2: #19201d;
-  --border: #232b28;
-  --text: #f1f4f2;
-  --muted: #9aa6a0;
-  --faint: #5d6964;
-  --primary: #134e3a;
-  --primary-soft: #0f2e24;
-  --accent: #3fe08f;
-  --accent-ink: #03160c;
-  --danger: #f05a5f;
-  --warn: #f0b429;
-  --radius: 16px;
+  --bg: #101418;
+  --surface: #2c3e50;
+  --surface-2: #243445;
+  --input: #22313f;
+  --line: rgba(220, 201, 166, 0.17);
+  --line-2: rgba(220, 201, 166, 0.09);
+  --fg: #fbf6ee;
+  --muted: #cbb994;
+  --faint: #8f8776;
+  --champ: #dcc9a6;
+  --accent: #b08d57;
+  --accent-fg: #101418;
+  --accent-soft: rgba(176, 141, 87, 0.18);
+  --pos: #8dbf98;
+  --neg: #e0907e;
+  --warn: #d9ae63;
+  --pos-soft: rgba(141, 191, 152, 0.15);
+  --neg-soft: rgba(224, 144, 126, 0.15);
+  --c1: #8fa9c2;
+  --c2: #dcc9a6;
+  --c3: #b08d57;
+  --c4: #7c8fa3;
+  --c5: #9db59a;
+  --c6: #d08a78;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+  --shadow-pop: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --shadow-gold: 0 6px 18px rgba(176, 141, 87, 0.35);
+  --overlay: rgba(8, 10, 12, 0.6);
+  --side: #101418;
+  /* Merk (app-icoon/logo): gelijk in donker en licht */
+  --brand-bg: #101418;
+  --brand-gold: #b08d57;
+  --brand-champ: #dcc9a6;
+  --font-display: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --r: 14px;
+  --r-sm: 10px;
   --nav-h: 64px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   color-scheme: dark;
+}
+
+/* Licht thema: via de themaknop, of "automatisch" als het toestel licht staat */
+:root[data-theme='light'] {
+  --bg: #f6f1e8;
+  --surface: #fffdf9;
+  --surface-2: #f3ece0;
+  --input: #ffffff;
+  --line: #e4d9c6;
+  --line-2: #eee6d8;
+  --fg: #101418;
+  --muted: #6e6253;
+  --faint: #9a8d7a;
+  --champ: #b08d57;
+  --accent: #8e6e3e;
+  --accent-fg: #fbf6ee;
+  --accent-soft: #f1e7d4;
+  --pos: #4e7f5a;
+  --neg: #a9503e;
+  --warn: #a57524;
+  --pos-soft: #e4efe4;
+  --neg-soft: #f6e2dc;
+  --c1: #2c3e50;
+  --c2: #c9ae7e;
+  --c3: #b08d57;
+  --c4: #7c8fa3;
+  --c5: #7e9a7a;
+  --c6: #b5654f;
+  --shadow: 0 1px 2px rgba(16, 20, 24, 0.05), 0 4px 14px rgba(16, 20, 24, 0.04);
+  --shadow-pop: 0 10px 30px rgba(16, 20, 24, 0.12);
+  --shadow-gold: 0 6px 18px rgba(142, 110, 62, 0.28);
+  --overlay: rgba(8, 10, 12, 0.6);
+  --side: #fbf6ee;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --bg: #f6f1e8;
+    --surface: #fffdf9;
+    --surface-2: #f3ece0;
+    --input: #ffffff;
+    --line: #e4d9c6;
+    --line-2: #eee6d8;
+    --fg: #101418;
+    --muted: #6e6253;
+    --faint: #9a8d7a;
+    --champ: #b08d57;
+    --accent: #8e6e3e;
+    --accent-fg: #fbf6ee;
+    --accent-soft: #f1e7d4;
+    --pos: #4e7f5a;
+    --neg: #a9503e;
+    --warn: #a57524;
+    --pos-soft: #e4efe4;
+    --neg-soft: #f6e2dc;
+    --c1: #2c3e50;
+    --c2: #c9ae7e;
+    --c3: #b08d57;
+    --c4: #7c8fa3;
+    --c5: #7e9a7a;
+    --c6: #b5654f;
+    --shadow: 0 1px 2px rgba(16, 20, 24, 0.05), 0 4px 14px rgba(16, 20, 24, 0.04);
+    --shadow-pop: 0 10px 30px rgba(16, 20, 24, 0.12);
+    --shadow-gold: 0 6px 18px rgba(142, 110, 62, 0.28);
+    --side: #fbf6ee;
+    color-scheme: light;
+  }
 }
 
 html,
@@ -36,13 +130,26 @@ body,
 
 body {
   margin: 0;
-  color: var(--text);
-  font-family: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  font-feature-settings: 'tnum' 1, 'cv11' 1;
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.45;
+  font-feature-settings: 'cv11', 'ss01';
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
   overflow-x: hidden;
   overscroll-behavior-y: none;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+}
+
+/* Links in lopende tekst zijn goud. Links die als knop/kaart opgemaakt zijn (met een class) houden hun eigen kleur. */
+a:not([class]) {
+  color: var(--accent);
 }
 
 /* iOS zoomt in op inputs kleiner dan 16px */
@@ -65,16 +172,46 @@ input[type='number']::-webkit-outer-spin-button {
 
 @layer components {
   .card {
-    @apply rounded-card border border-border bg-surface;
+    @apply rounded-card border border-line-2 bg-surface shadow-soft;
   }
   .tap {
     @apply min-h-[44px] min-w-[44px];
   }
   .label {
-    @apply text-xs font-medium uppercase tracking-wide text-muted;
+    @apply text-[11.5px] font-semibold uppercase text-muted;
+    letter-spacing: 0.07em;
+  }
+  .h1 {
+    @apply text-[27px] font-bold;
+    letter-spacing: -0.025em;
+  }
+  .h2 {
+    @apply text-[15.5px] font-semibold;
+    letter-spacing: -0.01em;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.025em;
   }
   .field {
-    @apply w-full rounded-xl border border-border bg-surface-2 px-3 py-2.5 text-text placeholder:text-faint focus:border-accent focus:outline-none;
+    @apply min-h-[44px] w-full rounded-[12px] border border-line bg-input px-3 py-2.5 text-text placeholder:text-faint focus:border-accent focus:outline-none;
+  }
+  /* Voortgangsbalk: spoor in champagne 12%, vulling goud */
+  .bar {
+    @apply h-1.5 overflow-hidden rounded-full bg-champ/[0.12];
+  }
+  .bar-lg {
+    @apply h-2.5 overflow-hidden rounded-full bg-champ/[0.12];
+  }
+  .bar > span,
+  .bar-lg > span {
+    @apply block h-full rounded-full bg-accent;
+  }
+  /* Belangrijkste KPI-tegel: subtiel gouden accent */
+  .kpi-hero {
+    background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 14%, var(--surface)), var(--surface));
+    border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+    box-shadow: inset 0 2px 0 var(--accent);
   }
 }
 
@@ -114,4 +251,18 @@ input[type='number']::-webkit-outer-spin-button {
 }
 .anim-pop {
   animation: pop 220ms ease-out;
+}
+
+@keyframes toast-in {
+  from {
+    transform: translate(-50%, 8px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+.anim-toast {
+  animation: toast-in 160ms ease-out;
 }

@@ -46,7 +46,7 @@ export default function MeasurePage() {
           </Button>
         }
       />
-      <div className="grid gap-3 px-4 sm:grid-cols-2 md:px-0 xl:grid-cols-3">
+      <div className="grid gap-3 px-4 sm:grid-cols-2 desk:px-0 xl:grid-cols-3">
         {types.map((t) => {
           const s = summarizeMeasurements(t, all);
           const series = all.filter((m) => m.typeId === t.id).slice(-12);

@@ -17,7 +17,7 @@ const out = [
   ['public/maskable-512.png', maskable, 512],
 ];
 for (const [file, src, size] of out) {
-  await sharp(src, { density: 384 }).resize(size, size).flatten({ background: '#0a0d0c' }).png().toFile(file);
+  await sharp(src, { density: 384 }).resize(size, size).flatten({ background: '#101418' }).png().toFile(file);
   console.log('✓', file);
 }
 writeFileSync('public/favicon.svg', svg);

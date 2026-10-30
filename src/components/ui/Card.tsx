@@ -20,12 +20,13 @@ export function CardHeader({ title, action, subtitle }: { title: ReactNode; acti
   );
 }
 
-export function Stat({ label, value, hint }: { label: string; value: ReactNode; hint?: ReactNode }) {
+/** KPI-tegel. `hero` = de belangrijkste tegel van het scherm: subtiel gouden accent, gouden label en waarde. */
+export function Stat({ label, value, hint, hero }: { label: string; value: ReactNode; hint?: ReactNode; hero?: boolean }) {
   return (
-    <div className="card p-4">
-      <p className="text-xs text-muted">{label}</p>
-      <p className="mt-1 text-2xl font-semibold tracking-tight">{value}</p>
-      {hint && <p className="mt-0.5 text-xs text-faint">{hint}</p>}
+    <div className={`card p-4 ${hero ? 'kpi-hero' : ''}`}>
+      <p className={`label ${hero ? 'text-accent' : ''}`}>{label}</p>
+      <p className={`num mt-1 text-2xl font-semibold ${hero ? 'text-accent' : 'text-text'}`}>{value}</p>
+      {hint && <p className="mt-0.5 text-xs text-muted">{hint}</p>}
     </div>
   );
 }

@@ -74,7 +74,7 @@ export default function ExerciseDetailPage() {
           )
         }
       />
-      <div className="space-y-4 px-4 md:px-0">
+      <div className="space-y-4 px-4 desk:px-0">
         <Tabs
           value={tab}
           onChange={setTab}

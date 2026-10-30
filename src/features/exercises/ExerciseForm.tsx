@@ -122,7 +122,7 @@ export function ExerciseForm({
                 key={m}
                 onClick={() => toggleSecondary(m)}
                 aria-pressed={form.secondaryMuscles.includes(m)}
-                className={`min-h-[36px] rounded-full border px-3 text-sm ${form.secondaryMuscles.includes(m) ? 'border-accent/60 bg-primary-soft text-accent' : 'border-border text-muted'}`}
+                className={`min-h-[36px] rounded-full border px-3 text-sm ${form.secondaryMuscles.includes(m) ? 'border-accent bg-accent text-accent-ink' : 'border-line text-muted hover:border-accent'}`}
               >
                 {MUSCLE_LABELS[m]}
               </button>

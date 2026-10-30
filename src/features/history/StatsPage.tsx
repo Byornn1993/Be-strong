@@ -74,7 +74,7 @@ export default function StatsPage() {
   return (
     <div>
       <PageHeader title="Statistieken" back="/history" />
-      <div className="space-y-4 px-4 md:px-0">
+      <div className="space-y-4 px-4 desk:px-0">
         <div className="grid gap-2 sm:grid-cols-[1fr_200px]">
           <Tabs
             value={period}
@@ -95,7 +95,7 @@ export default function StatsPage() {
           </select>
         </div>
         <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-          <Stat label="Workouts" value={summary.workouts} hint={`${formatNumber(Math.round(summary.perWeek * 10) / 10)} per week`} />
+          <Stat hero label="Workouts" value={summary.workouts} hint={`${formatNumber(Math.round(summary.perWeek * 10) / 10)} per week`} />
           <Stat label="Tijd" value={formatDuration(summary.durationSec)} />
           <Stat label="Volume" value={formatVolume(summary.volume)} />
           <Stat label="Sets" value={summary.sets} />

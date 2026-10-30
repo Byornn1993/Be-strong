@@ -67,7 +67,7 @@ export default function ProfilePage() {
           </Link>
         }
       />
-      <div className="space-y-4 px-4 md:px-0">
+      <div className="space-y-4 px-4 desk:px-0">
         <div className="card flex items-center gap-4 p-4">
           {profile.avatarUrl ? (
             <img src={profile.avatarUrl} alt="" className="h-16 w-16 rounded-full object-cover" />

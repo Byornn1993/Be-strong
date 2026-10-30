@@ -72,7 +72,7 @@ export function FinishSheet({
           <Stat label="Duur" value={formatDuration(preview.durationSec)} />
           <Stat label="Oefeningen" value={preview.exercises.length} />
           <Stat label="Sets voltooid" value={counts.done} />
-          <Stat label="Volume" value={formatVolume(workoutVolume(preview))} />
+          <Stat hero label="Volume" value={formatVolume(workoutVolume(preview))} />
         </div>
 
         {prs.length > 0 && (

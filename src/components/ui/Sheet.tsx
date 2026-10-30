@@ -45,7 +45,7 @@ export function Sheet({ open, onClose, title, action, children, footer, full }: 
 
   return createPortal(
     <div className={`fixed inset-0 z-50 flex ${full ? '' : 'items-end md:items-center'} justify-center`} role="presentation">
-      {!full && <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]" onClick={onClose} aria-hidden />}
+      {!full && <div className="absolute inset-0 bg-[var(--overlay)] backdrop-blur-[2px]" onClick={onClose} aria-hidden />}
       <div
         ref={panel}
         tabIndex={-1}
@@ -55,7 +55,7 @@ export function Sheet({ open, onClose, title, action, children, footer, full }: 
         className={
           full
             ? 'anim-sheet relative flex h-full w-full flex-col bg-bg outline-none'
-            : 'anim-sheet relative flex max-h-[92dvh] w-full flex-col rounded-t-[22px] border border-border bg-surface outline-none md:max-w-lg md:rounded-[22px]'
+            : 'anim-sheet relative flex max-h-[92dvh] w-full flex-col rounded-t-[22px] border border-line-2 bg-surface shadow-pop outline-none md:max-w-lg md:rounded-[22px]'
         }
         style={full ? { paddingTop: 'var(--safe-top)' } : { paddingBottom: 'var(--safe-bottom)' }}
       >

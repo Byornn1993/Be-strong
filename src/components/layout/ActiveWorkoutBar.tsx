@@ -14,7 +14,7 @@ export function ActiveWorkoutBar() {
     <button
       type="button"
       onClick={openSheet}
-      className="fixed inset-x-2 z-30 flex min-h-[52px] items-center gap-3 rounded-2xl border border-accent/30 bg-primary px-4 text-left shadow-lg shadow-black/40 md:bottom-4 md:left-auto md:right-6 md:w-96"
+      className="fixed inset-x-2 z-30 flex min-h-[52px] items-center gap-3 rounded-2xl border border-accent/50 bg-surface px-4 text-left shadow-pop desk:bottom-4 desk:left-auto desk:right-6 desk:w-96"
       style={{ bottom: 'calc(var(--nav-h) + var(--safe-bottom) + 8px)' }}
     >
       <span className="relative flex h-2.5 w-2.5">
@@ -23,7 +23,7 @@ export function ActiveWorkoutBar() {
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-sm font-semibold">{active.pausedAt ? 'Workout gepauzeerd' : 'Workout bezig'}</span>
-        <span className="block text-xs tabular-nums text-accent/80">
+        <span className="block text-xs tabular-nums text-muted">
           {formatClock(workoutElapsedSec(active, now))}
           {rest > 0 && ` · rust ${formatClock(rest)}`}
         </span>

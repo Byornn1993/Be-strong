@@ -58,7 +58,7 @@ export default function StartWorkoutPage() {
   return (
     <div>
       <PageHeader title="Start workout" />
-      <div className="space-y-6 px-4 md:px-0">
+      <div className="space-y-6 px-4 desk:px-0">
         <section>
           <p className="label mb-2">Snel starten</p>
           <Button variant="primary" size="lg" block icon={<Zap size={18} />} onClick={startEmpty}>

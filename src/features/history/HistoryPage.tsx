@@ -151,7 +151,7 @@ export default function HistoryPage() {
           </Link>
         }
       />
-      <div className="space-y-4 px-4 md:px-0">
+      <div className="space-y-4 px-4 desk:px-0">
         <Tabs
           value={view}
           onChange={(v) => setParams({ view: v }, { replace: true })}

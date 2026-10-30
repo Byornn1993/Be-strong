@@ -12,7 +12,7 @@ interface Props {
 }
 
 function Controls({ rest, now, onChange, compact }: Props & { compact?: boolean }) {
-  const btn = `tap rounded-lg bg-surface-2 px-2 text-sm font-semibold tabular-nums hover:bg-[#222b28] ${compact ? 'min-h-[40px]' : ''}`;
+  const btn = `tap rounded-lg bg-surface-2 px-2 text-sm font-semibold tabular-nums hover:bg-champ/[0.07] ${compact ? 'min-h-[40px]' : ''}`;
   return (
     <div className="flex items-center gap-1.5">
       <button type="button" className={btn} onClick={() => onChange(adjustRest(rest, -15, Date.now()))} aria-label="15 seconden minder">
@@ -35,8 +35,8 @@ export function RestBar(props: Props) {
   const p = restProgress(rest, now);
   return (
     <div className="my-1 flex items-center gap-3 rounded-xl border border-accent/25 bg-primary-soft px-3 py-1.5" role="timer" aria-live="off">
-      <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-surface-2">
-        <div className="absolute inset-y-0 left-0 rounded-full bg-accent" style={{ width: `${(1 - p) * 100}%` }} />
+      <div className="bar relative flex-1">
+        <span className="absolute inset-y-0 left-0" style={{ width: `${(1 - p) * 100}%` }} />
       </div>
       <span className="w-12 text-right text-sm font-semibold tabular-nums text-accent">{formatClock(restRemainingSec(rest, now))}</span>
       <Controls {...props} compact />
@@ -49,7 +49,7 @@ export function FloatingRest(props: Props) {
   const { rest, now } = props;
   const p = restProgress(rest, now);
   return (
-    <div className="pointer-events-auto mx-auto flex w-full max-w-md items-center gap-3 rounded-2xl border border-accent/30 bg-surface px-3 py-2 shadow-xl shadow-black/50">
+    <div className="pointer-events-auto mx-auto flex w-full max-w-md items-center gap-3 rounded-2xl border border-accent/50 bg-surface px-3 py-2 shadow-pop">
       <div className="relative flex h-11 w-11 items-center justify-center">
         <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90">
           <circle cx="18" cy="18" r="16" fill="none" stroke="var(--surface-2)" strokeWidth="3" />

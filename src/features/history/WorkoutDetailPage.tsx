@@ -70,7 +70,7 @@ export default function WorkoutDetailPage() {
           </>
         }
       />
-      <div className="space-y-4 px-4 md:px-0">
+      <div className="space-y-4 px-4 desk:px-0">
         {params.get('finished') && (
           <div className="flex items-center gap-2 rounded-card border border-accent/30 bg-primary-soft p-3 text-sm text-accent">
             <CheckCircle2 size={18} /> Workout opgeslagen. Stronger than yesterday!
@@ -80,7 +80,7 @@ export default function WorkoutDetailPage() {
           <Stat label="Duur" value={formatDuration(w.durationSec)} />
           <Stat label="Oefeningen" value={w.exercises.length} />
           <Stat label="Sets" value={completedSetCount(w)} />
-          <Stat label="Volume" value={formatVolume(workoutVolume(w))} />
+          <Stat hero label="Volume" value={formatVolume(workoutVolume(w))} />
         </div>
         {prs.length > 0 && (
           <Card className="p-4">
@@ -153,7 +153,7 @@ function EditWorkout({ draft, setDraft, onSave, saving }: { draft: Workout; setD
           </>
         }
       />
-      <div className="space-y-4 px-4 md:px-0">
+      <div className="space-y-4 px-4 desk:px-0">
         <p className="rounded-card border border-warn/30 bg-warn/10 p-3 text-sm text-warn">
           Je bewerkt een <strong>historische workout</strong>. Dit verandert alleen deze workout in je geschiedenis, niet de template.
         </p>

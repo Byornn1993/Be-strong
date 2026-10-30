@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/States';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { SyncIndicator } from '@/components/layout/SyncIndicator';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { useExercises, useOutboxCount, useProfile } from '@/lib/db/hooks';
 import { saveProfile, saveTemplate } from '@/lib/db/repo';
 import { closeDb, getDb } from '@/lib/db/schema';
@@ -113,7 +114,7 @@ export default function SettingsPage() {
   return (
     <div>
       <PageHeader title="Instellingen" back="/profile" />
-      <div className="grid gap-4 px-4 md:grid-cols-2 md:px-0">
+      <div className="grid gap-4 px-4 md:grid-cols-2 desk:px-0">
         <Card className="space-y-3 p-4">
           <p className="font-semibold">Profiel</p>
           <ProfileForm key={profile.serverUpdatedAt ?? 'local'} profile={profile} />
@@ -159,7 +160,8 @@ export default function SettingsPage() {
         <PasswordCard />
 
         <Card className="space-y-2 p-4">
-          <p className="font-semibold">Gegevens</p>
+          <p className="font-semibold">Gegevens en account</p>
+          <ThemeToggle className="-mx-1 border border-line" />
           <Button block icon={<Download size={16} />} onClick={exportBackup}>
             Back-up exporteren (JSON)
           </Button>

@@ -73,7 +73,7 @@ export default function ImportStrongPage() {
   return (
     <div>
       <PageHeader title="Strong-import" back="/settings" />
-      <div className="space-y-4 px-4 md:px-0">
+      <div className="space-y-4 px-4 desk:px-0">
         <Card className="space-y-3 p-4 text-sm text-muted">
           <p>
             Exporteer in de Strong-app via <em>Settings › Export Strong Data</em> en kies hier het CSV-bestand. Je krijgt eerst een voorbeeld; er wordt pas iets opgeslagen als je bevestigt.
@@ -92,7 +92,7 @@ export default function ImportStrongPage() {
         {result && s && (
           <>
             <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-              <Stat label="Workouts" value={s.workouts} hint={s.firstDate && s.lastDate ? `${formatDate(s.firstDate)} – ${formatDate(s.lastDate)}` : undefined} />
+              <Stat hero label="Workouts" value={s.workouts} hint={s.firstDate && s.lastDate ? `${formatDate(s.firstDate)} – ${formatDate(s.lastDate)}` : undefined} />
               <Stat label="Sets" value={s.sets} />
               <Stat label="Onbekende oefeningen" value={result.newExercises.length} hint="worden eigen oefeningen" />
               <Stat label="Overgeslagen rijen" value={s.restTimerRows + s.skippedRows.length} hint={`${s.restTimerRows} rusttimer-rijen`} />

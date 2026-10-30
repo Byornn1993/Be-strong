@@ -25,11 +25,11 @@ export function SyncIndicator({ compact = false }: { compact?: boolean }) {
   return (
     <Link
       to="/settings/sync"
-      className={`flex min-h-[36px] items-center gap-2 rounded-lg px-2 text-xs ${toneClass[l.tone]} hover:bg-surface md:justify-center lg:justify-start`}
+      className={`flex min-h-[36px] items-center gap-2 rounded-lg px-2 text-xs ${toneClass[l.tone]} hover:bg-champ/[0.07]`}
       aria-label={`Syncstatus: ${l.text}`}
     >
       <Icon size={14} className={'spin' in l && l.spin ? 'animate-spin' : ''} />
-      <span className={compact ? 'sr-only' : 'md:hidden lg:inline'}>{l.text}</span>
+      <span className={compact ? 'sr-only' : ''}>{l.text}</span>
     </Link>
   );
 }

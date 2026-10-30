@@ -9,7 +9,7 @@ export const setInputId = (setId: string) => `set-in-${setId}`;
 const badgeColor: Record<WorkoutSet['type'], string> = {
   normal: 'text-text',
   warmup: 'text-warn',
-  drop: 'text-[#c39bff]',
+  drop: 'text-[var(--c1)]',
   failure: 'text-danger',
 };
 
@@ -35,7 +35,7 @@ export function SetRow({
   const done = set.completed;
   return (
     <div
-      className={`grid items-center gap-1.5 rounded-xl px-1 py-1 transition-colors ${done ? 'bg-accent/15' : ''}`}
+      className={`grid items-center gap-1.5 rounded-xl px-1 py-1 transition-colors ${done ? 'bg-pos/15' : ''}`}
       style={{ gridTemplateColumns: `40px minmax(0,1fr) ${cols.map(() => 'minmax(56px,72px)').join(' ')} 44px` }}
     >
       <button type="button" onClick={onBadge} className={`tap -my-1 rounded-lg text-sm font-bold ${badgeColor[set.type]}`} aria-label={`Set ${normalIndex}, type wijzigen`}>
@@ -79,7 +79,7 @@ export function SetRow({
         onClick={onToggle}
         aria-pressed={done}
         aria-label={done ? 'Set niet meer afgevinkt' : 'Set afvinken'}
-        className={`tap flex h-10 items-center justify-center rounded-lg transition ${done ? 'anim-pop bg-accent text-accent-ink' : 'bg-surface-2 text-faint hover:text-text'}`}
+        className={`tap flex h-10 items-center justify-center rounded-lg transition ${done ? 'anim-pop bg-pos text-bg' : 'border border-line bg-input text-faint hover:border-accent hover:text-text'}`}
       >
         <Check size={20} strokeWidth={3} />
       </button>

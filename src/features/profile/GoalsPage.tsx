@@ -40,7 +40,7 @@ export default function GoalsPage() {
           </Button>
         }
       />
-      <div className="grid gap-3 px-4 md:grid-cols-2 md:px-0">
+      <div className="grid gap-3 px-4 md:grid-cols-2 desk:px-0">
         {sorted.length === 0 && (
           <div className="md:col-span-2">
             <EmptyState title="Nog geen doelen" text="Stel een doel in voor je gewicht, frequentie, streak of een oefening." action={<Button variant="primary" onClick={() => setEditing('new')}>Doel toevoegen</Button>} />
@@ -67,8 +67,8 @@ export default function GoalsPage() {
                   <Trash2 size={18} />
                 </IconButton>
               </div>
-              <div className="mt-3 h-2 rounded-full bg-surface-2">
-                <div className="h-2 rounded-full bg-accent" style={{ width: `${p.ratio * 100}%` }} />
+              <div className="bar-lg mt-3">
+                <span style={{ width: `${p.ratio * 100}%` }} />
               </div>
               <div className="mt-2 flex items-center justify-between text-xs text-muted">
                 <span>{formatInt(p.ratio * 100)}%</span>

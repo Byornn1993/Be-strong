@@ -45,9 +45,9 @@ export default function MeasureTypePage() {
           </Button>
         }
       />
-      <div className="space-y-4 px-4 md:px-0">
+      <div className="space-y-4 px-4 desk:px-0">
         <div className="grid grid-cols-2 gap-2">
-          <Stat label="Huidig" value={s.current ? `${formatNumber(s.current.value)} ${type.unit}` : '—'} hint={s.current ? formatDate(s.current.measuredAt) : undefined} />
+          <Stat hero label="Huidig" value={s.current ? `${formatNumber(s.current.value)} ${type.unit}` : '—'} hint={s.current ? formatDate(s.current.measuredAt) : undefined} />
           <Stat
             label="Vorige"
             value={s.previous ? `${formatNumber(s.previous.value)} ${type.unit}` : '—'}

@@ -76,7 +76,7 @@ export default function TemplateEditorPage() {
           </Button>
         }
       />
-      <div className="space-y-4 px-4 md:px-0">
+      <div className="space-y-4 px-4 desk:px-0">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block">
             <span className="label">Naam</span>
