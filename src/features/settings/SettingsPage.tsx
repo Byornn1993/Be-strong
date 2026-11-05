@@ -101,7 +101,7 @@ export default function SettingsPage() {
     const left = await getDb().outbox.count();
     if (left > 0 && !(await confirm({ title: 'Niet alles is gesynchroniseerd', message: `${left} wijziging(en) staan nog lokaal. Ze blijven op dit toestel bewaard en worden verstuurd bij de volgende login.`, confirmLabel: 'Toch uitloggen', danger: true })))
       return;
-    await supabase?.auth.signOut();
+    await supabase?.auth.signOut({ scope: 'local' });
   };
 
   const wipeLocal = async () => {
@@ -109,7 +109,7 @@ export default function SettingsPage() {
     const name = getDb().name;
     closeDb();
     await Dexie.delete(name);
-    await supabase?.auth.signOut();
+    await supabase?.auth.signOut({ scope: 'local' });
   };
 
   return (
