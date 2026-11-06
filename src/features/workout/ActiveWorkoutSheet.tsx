@@ -138,7 +138,7 @@ export function ActiveWorkoutSheet() {
     <Sheet open={sheetOpen} onClose={closeSheet} full>
       <div className="flex min-h-full flex-col">
         {/* Kop */}
-        <div className="sticky top-0 z-20 border-b border-border bg-bg/95 px-2 py-2 backdrop-blur">
+        <div className="sticky top-0 z-20 border-b border-border bg-bg/50 px-2 py-2 backdrop-blur-md">
           <div className="flex items-center gap-1">
             <IconButton label="Minimaliseren" onClick={closeSheet}>
               <ChevronDown size={24} />

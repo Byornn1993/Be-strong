@@ -54,7 +54,7 @@ export function Sheet({ open, onClose, title, action, children, footer, full }: 
         aria-labelledby={title ? titleId : undefined}
         className={
           full
-            ? 'anim-sheet relative flex h-full w-full flex-col bg-bg outline-none'
+            ? 'anim-sheet relative page-bg flex h-full w-full flex-col outline-none'
             : 'anim-sheet relative flex max-h-[92dvh] w-full flex-col rounded-t-[22px] border border-line-2 bg-surface shadow-pop outline-none md:max-w-lg md:rounded-[22px]'
         }
         style={full ? { paddingTop: 'var(--safe-top)' } : { paddingBottom: 'var(--safe-bottom)' }}

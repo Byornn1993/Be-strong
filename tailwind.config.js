@@ -14,6 +14,9 @@ export default {
       colors: {
         bg: token('--bg'),
         surface: token('--surface'),
+        card: token('--card'),
+        'card-line': token('--card-line'),
+        field: token('--field'),
         'surface-2': token('--surface-2'),
         input: token('--input'),
         border: token('--line-2'),

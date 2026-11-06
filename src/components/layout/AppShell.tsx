@@ -72,7 +72,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
   return (
     <div className="min-h-dvh desk:flex" style={{ paddingLeft: 'var(--safe-left)', paddingRight: 'var(--safe-right)' }}>
       {/* Zijbalk vanaf 900px */}
-      <aside className="sticky top-0 hidden h-dvh w-[240px] shrink-0 flex-col border-r border-line-2 bg-side px-4 py-5 desk:flex">
+      <aside className="sticky top-0 hidden h-dvh w-[240px] shrink-0 flex-col border-r border-card-line bg-side px-4 py-5 backdrop-blur-md desk:flex">
         <div className="mb-7 flex items-center gap-3 px-1">
           <Logo size={38} />
           <div>
@@ -114,7 +114,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
       {/* Onderste menu onder 900px */}
       <nav
         aria-label="Hoofdnavigatie"
-        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line-2 bg-side desk:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-card-line bg-side backdrop-blur-md desk:hidden"
         style={{ paddingBottom: 'var(--safe-bottom)', height: 'calc(var(--nav-h) + var(--safe-bottom))' }}
       >
         {NAV.map((n) => (

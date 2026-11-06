@@ -4,19 +4,26 @@
 
 /* ── Bjorn huisstijl — design tokens ─────────────────────────────
    Deep Black #101418 · Slate Blue #2C3E50 · Muted Gold #B08D57 · Champagne #DCC9A6 · Warm White #FBF6EE
-   Componenten gebruiken ALLEEN deze variabelen (via Tailwind: bg-surface, text-accent, …). */
+   Componenten gebruiken ALLEEN deze variabelen (via Tailwind: bg-surface, text-accent, …).
+   --surface is dekkend: voor pop-ups en sheets die over de inhoud liggen.
+   --card en --field zijn doorschijnend: voor kaarten en velden op de achtergrondgloed. */
 
 /* Donker thema = standaard */
 :root {
   --bg: #101418;
+  --bg-glow: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(44, 62, 80, 0.85), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(176, 141, 87, 0.16), transparent 70%);
+  --card: rgba(44, 62, 80, 0.55);
+  --card-line: rgba(220, 201, 166, 0.12);
+  --field: rgba(44, 62, 80, 0.55);
   --surface: #2c3e50;
   --surface-2: #243445;
   --input: #22313f;
   --line: rgba(220, 201, 166, 0.17);
-  --line-2: rgba(220, 201, 166, 0.09);
+  --line-2: rgba(220, 201, 166, 0.08);
   --fg: #fbf6ee;
   --muted: #cbb994;
-  --faint: #8f8776;
+  --faint: #a89f8c;
   --champ: #dcc9a6;
   --accent: #b08d57;
   --accent-fg: #101418;
@@ -36,7 +43,7 @@
   --shadow-pop: 0 10px 30px rgba(0, 0, 0, 0.45);
   --shadow-gold: 0 6px 18px rgba(176, 141, 87, 0.35);
   --overlay: rgba(8, 10, 12, 0.6);
-  --side: #101418;
+  --side: rgba(16, 20, 24, 0.8);
   /* Merk (app-icoon/logo): gelijk in donker en licht */
   --brand-bg: #101418;
   --brand-gold: #b08d57;
@@ -55,22 +62,27 @@
 
 /* Licht thema: via de themaknop, of "automatisch" als het toestel licht staat */
 :root[data-theme='light'] {
-  --bg: #f6f1e8;
+  --bg: #fbf6ee;
+  --bg-glow: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(220, 201, 166, 0.55), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(44, 62, 80, 0.1), transparent 70%);
+  --card: rgba(255, 255, 255, 0.75);
+  --card-line: rgba(176, 141, 87, 0.25);
+  --field: rgba(255, 255, 255, 0.75);
   --surface: #fffdf9;
   --surface-2: #f3ece0;
   --input: #ffffff;
   --line: #e4d9c6;
-  --line-2: #eee6d8;
+  --line-2: rgba(44, 62, 80, 0.08);
   --fg: #101418;
   --muted: #6e6253;
-  --faint: #9a8d7a;
+  --faint: #7a6e5e;
   --champ: #b08d57;
   --accent: #8e6e3e;
   --accent-fg: #fbf6ee;
   --accent-soft: #f1e7d4;
   --pos: #4e7f5a;
   --neg: #a9503e;
-  --warn: #a57524;
+  --warn: #8a6118;
   --pos-soft: #e4efe4;
   --neg-soft: #f6e2dc;
   --c1: #2c3e50;
@@ -83,28 +95,33 @@
   --shadow-pop: 0 10px 30px rgba(16, 20, 24, 0.12);
   --shadow-gold: 0 6px 18px rgba(142, 110, 62, 0.28);
   --overlay: rgba(8, 10, 12, 0.6);
-  --side: #fbf6ee;
+  --side: rgba(251, 246, 238, 0.82);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
-    --bg: #f6f1e8;
+    --bg: #fbf6ee;
+    --bg-glow: radial-gradient(ellipse 80% 55% at 50% 0%, rgba(220, 201, 166, 0.55), transparent 70%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(44, 62, 80, 0.1), transparent 70%);
+    --card: rgba(255, 255, 255, 0.75);
+    --card-line: rgba(176, 141, 87, 0.25);
+    --field: rgba(255, 255, 255, 0.75);
     --surface: #fffdf9;
     --surface-2: #f3ece0;
     --input: #ffffff;
     --line: #e4d9c6;
-    --line-2: #eee6d8;
+    --line-2: rgba(44, 62, 80, 0.08);
     --fg: #101418;
     --muted: #6e6253;
-    --faint: #9a8d7a;
+    --faint: #7a6e5e;
     --champ: #b08d57;
     --accent: #8e6e3e;
     --accent-fg: #fbf6ee;
     --accent-soft: #f1e7d4;
     --pos: #4e7f5a;
     --neg: #a9503e;
-    --warn: #a57524;
+    --warn: #8a6118;
     --pos-soft: #e4efe4;
     --neg-soft: #f6e2dc;
     --c1: #2c3e50;
@@ -116,7 +133,7 @@
     --shadow: 0 1px 2px rgba(16, 20, 24, 0.05), 0 4px 14px rgba(16, 20, 24, 0.04);
     --shadow-pop: 0 10px 30px rgba(16, 20, 24, 0.12);
     --shadow-gold: 0 6px 18px rgba(142, 110, 62, 0.28);
-    --side: #fbf6ee;
+    --side: rgba(251, 246, 238, 0.82);
     color-scheme: light;
   }
 }
@@ -125,11 +142,30 @@ html,
 body,
 #root {
   min-height: 100%;
-  background: var(--bg);
+}
+
+html {
+  background-color: var(--bg);
+}
+
+/* Achtergrondgloed op een vaste laag: iOS negeert background-attachment: fixed. */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  height: 100vh;
+  height: 100lvh;
+  pointer-events: none;
+  background-color: var(--bg);
+  background-image: var(--bg-glow);
 }
 
 body {
   margin: 0;
+  background: transparent;
   color: var(--fg);
   font-family: var(--font-body);
   font-size: 15px;
@@ -172,7 +208,12 @@ input[type='number']::-webkit-outer-spin-button {
 
 @layer components {
   .card {
-    @apply rounded-card border border-line-2 bg-surface shadow-soft;
+    @apply rounded-card border border-card-line bg-card shadow-soft;
+  }
+  /* Volledig scherm boven de pagina: zelfde gloed als de achtergrond */
+  .page-bg {
+    background-color: var(--bg);
+    background-image: var(--bg-glow);
   }
   .tap {
     @apply min-h-[44px] min-w-[44px];
@@ -194,7 +235,17 @@ input[type='number']::-webkit-outer-spin-button {
     letter-spacing: -0.025em;
   }
   .field {
-    @apply min-h-[44px] w-full rounded-[12px] border border-line bg-input px-3 py-2.5 text-text placeholder:text-faint focus:border-accent focus:outline-none;
+    @apply min-h-[44px] w-full rounded-[12px] border border-card-line bg-field px-3 py-2.5 text-text placeholder:text-faint focus:border-accent focus:outline-none;
+  }
+  /* Open keuzelijst: dekkend, ook als het veld doorschijnend is */
+  .field option {
+    background-color: var(--surface);
+    color: var(--fg);
+  }
+  /* In een kaart of sheet blijft een veld dieper dan zijn ondergrond */
+  .card .field,
+  [role='dialog'] .field {
+    background-color: var(--input);
   }
   /* Voortgangsbalk: spoor in champagne 12%, vulling goud */
   .bar {
@@ -209,7 +260,7 @@ input[type='number']::-webkit-outer-spin-button {
   }
   /* Belangrijkste KPI-tegel: subtiel gouden accent */
   .kpi-hero {
-    background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 14%, var(--surface)), var(--surface));
+    background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 14%, var(--card)), var(--card));
     border-color: color-mix(in srgb, var(--accent) 50%, transparent);
     box-shadow: inset 0 2px 0 var(--accent);
   }

@@ -47,7 +47,7 @@ export default function ExercisesPage() {
           </Button>
         }
       />
-      <div className="sticky top-0 z-10 space-y-2 bg-bg/95 px-4 pb-2 pt-1 backdrop-blur desk:px-0">
+      <div className="sticky top-0 z-10 space-y-2 bg-bg/50 px-4 pb-2 pt-1 backdrop-blur-md desk:px-0">
         <label className="relative block">
           <Search size={18} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-faint" />
           <input className="field pl-10" placeholder="Zoek op naam" value={q} onChange={(e) => setQ(e.target.value)} />

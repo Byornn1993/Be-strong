@@ -23,7 +23,7 @@ export function PageHeader({ title, back, actions, subtitle }: { title: ReactNod
 
 export function Tabs<T extends string>({ value, onChange, tabs }: { value: T; onChange: (v: T) => void; tabs: { value: T; label: string }[] }) {
   return (
-    <div role="tablist" className="flex gap-1 rounded-card border border-line-2 bg-surface p-1">
+    <div role="tablist" className="flex gap-1 rounded-card border border-card-line bg-card p-1">
       {tabs.map((t) => (
         <button
           key={t.value}

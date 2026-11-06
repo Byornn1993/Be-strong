@@ -23,7 +23,7 @@ export function applyTheme(choice: ThemeChoice): void {
   if (choice === 'auto') root.removeAttribute('data-theme');
   else root.setAttribute('data-theme', choice);
   const isLight = choice === 'light' || (choice === 'auto' && window.matchMedia('(prefers-color-scheme: light)').matches);
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isLight ? '#F6F1E8' : '#101418');
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', isLight ? '#FBF6EE' : '#101418');
 }
 
 export function setTheme(choice: ThemeChoice): void {

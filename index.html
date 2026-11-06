@@ -13,8 +13,7 @@
     <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png?v=2" />
     <!-- Geen witte flits: meteen donkere achtergrond, en het gekozen thema vóór de eerste render. -->
     <style>
-      html,
-      body {
+      html {
         background: #101418;
         color: #fbf6ee;
       }
@@ -28,8 +27,8 @@
           else root.setAttribute('data-theme', t === 'light' ? 'light' : 'dark');
           var light = t === 'light' || (t === 'auto' && window.matchMedia('(prefers-color-scheme: light)').matches);
           if (light) {
-            document.querySelector('meta[name="theme-color"]').setAttribute('content', '#F6F1E8');
-            document.write('<style>html,body{background:#F6F1E8;color:#101418}</style>');
+            document.querySelector('meta[name="theme-color"]').setAttribute('content', '#FBF6EE');
+            document.write('<style>html{background:#FBF6EE;color:#101418}</style>');
           }
         } catch (e) {}
       })();
