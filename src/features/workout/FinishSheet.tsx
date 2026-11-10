@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Trophy } from 'lucide-react';
 import { Sheet } from '@/components/ui/Sheet';
 import { Button } from '@/components/ui/Button';
+import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { Stat } from '@/components/ui/Card';
 import type { ActiveWorkout, Template, Workout } from '@/lib/db/types';
 import { detectNewPrs, PR_LABELS, type NewPr } from '@/domain/prs';
@@ -33,7 +34,8 @@ export function FinishSheet({
   template: Template | null;
 }) {
   const navigate = useNavigate();
-  const { flush, clearAfterFinish } = useWorkoutActions();
+  const { flush, clearAfterFinish, discard } = useWorkoutActions();
+  const { confirm, dialog } = useConfirm();
   const [note, setNote] = useState(active.note ?? '');
   const [keepUnchecked, setKeepUnchecked] = useState(false);
   const [updateTemplate, setUpdateTemplate] = useState(false);
@@ -64,6 +66,21 @@ export function FinishSheet({
   };
 
   const empty = completedSetCount(preview) === 0;
+
+  // Per ongeluk gestart of niet afgemaakt: workout weggooien, er komt niets in je geschiedenis.
+  const removeWorkout = async () => {
+    const ok =
+      empty ||
+      (await confirm({
+        title: 'Workout weggooien?',
+        message: `${counts.done} afgevinkte set${counts.done === 1 ? '' : 's'} gaan verloren. Er wordt niets bewaard in je geschiedenis.`,
+        confirmLabel: 'Weggooien',
+        danger: true,
+      }));
+    if (!ok) return;
+    onClose();
+    await discard();
+  };
 
   return (
     <Sheet open={open} onClose={onClose} title="Workout afronden">
@@ -120,13 +137,29 @@ export function FinishSheet({
           <textarea className="field mt-1 min-h-[70px]" value={note} onChange={(e) => setNote(e.target.value)} placeholder="Hoe ging het?" />
         </label>
 
-        {empty && <p className="text-sm text-warn">Er is nog geen enkele set afgevinkt. Vink sets af of kies “Behouden”.</p>}
+        {empty && (
+          <p className="text-sm text-warn">
+            Er is nog geen enkele set afgevinkt. Per ongeluk gestart? Kies dan <strong>Workout verwijderen</strong>: er wordt niets bewaard.
+          </p>
+        )}
         {error && <p className="text-sm text-danger">{error}</p>}
 
-        <Button variant="primary" size="lg" block loading={busy} disabled={empty} onClick={finish}>
-          Workout opslaan
-        </Button>
+        {empty ? (
+          <Button variant="primary" size="lg" block onClick={removeWorkout}>
+            Workout verwijderen
+          </Button>
+        ) : (
+          <Button variant="primary" size="lg" block loading={busy} onClick={finish}>
+            Workout opslaan
+          </Button>
+        )}
+        {!empty && (
+          <Button variant="ghost" block className="text-danger" onClick={removeWorkout}>
+            Workout weggooien zonder op te slaan
+          </Button>
+        )}
       </div>
+      {dialog}
     </Sheet>
   );
 }
