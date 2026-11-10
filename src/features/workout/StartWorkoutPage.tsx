@@ -12,14 +12,14 @@ import { cloneTemplate, deleteTemplate, saveTemplate } from '@/lib/db/repo';
 import type { Template } from '@/lib/db/types';
 import { formatDate } from '@/domain/dates';
 import { MUSCLE_LABELS } from '@/domain/exerciseTypes';
-import { useActiveWorkout } from './WorkoutProvider';
+import { useWorkoutActions } from './WorkoutProvider';
 import { activeFromTemplate, newActiveWorkout } from './logic';
 
 export default function StartWorkoutPage() {
   const templates = useTemplates();
   const exercises = useExerciseMap();
   const last = useLastPerformed();
-  const { active, start, openSheet } = useActiveWorkout();
+  const { getActive, start, openSheet } = useWorkoutActions();
   const navigate = useNavigate();
   const { confirm, dialog } = useConfirm();
   const [preview, setPreview] = useState<Template | null>(null);
@@ -35,7 +35,7 @@ export default function StartWorkoutPage() {
   }, [templates]);
 
   const guardActive = async () => {
-    if (!active) return true;
+    if (!getActive()) return true;
     const ok = await confirm({
       title: 'Er loopt al een workout',
       message: 'Rond eerst je lopende workout af, of hervat hem.',

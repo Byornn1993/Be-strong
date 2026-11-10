@@ -10,7 +10,7 @@ import { addMonths, dayKey, formatDate, formatMonth, monthGrid, monthKey, startO
 import { byDay } from '@/domain/stats';
 import { bestSet, completedSetCount, workoutVolume } from '@/domain/volume';
 import { formatDuration, formatSet, formatVolume } from '@/domain/format';
-import { useActiveWorkout } from '@/features/workout/WorkoutProvider';
+import { useWorkoutActions, useWorkoutStatus } from '@/features/workout/WorkoutProvider';
 import { newActiveWorkout } from '@/features/workout/logic';
 
 export function WorkoutCard({ w }: { w: Workout }) {
@@ -129,7 +129,8 @@ export default function HistoryPage() {
   const workouts = useWorkouts();
   const [params, setParams] = useSearchParams();
   const view = (params.get('view') as 'list' | 'calendar') ?? 'list';
-  const { start, active } = useActiveWorkout();
+  const { start } = useWorkoutActions();
+  const { hasActive: active } = useWorkoutStatus();
   const [limit, setLimit] = useState(30);
 
   const grouped = useMemo(() => {

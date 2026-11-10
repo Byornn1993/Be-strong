@@ -3,15 +3,15 @@ import { SkipForward, Timer } from 'lucide-react';
 import type { RestTimerState } from '@/lib/db/types';
 import { adjustRest, restProgress, restRemainingSec } from '@/domain/timer';
 import { formatClock } from '@/domain/format';
+import { useNow } from '@/lib/useNow';
 import { beep, notifyRestDone, vibrate } from './alerts';
 
 interface Props {
   rest: RestTimerState;
-  now: number;
   onChange: (r: RestTimerState | null) => void;
 }
 
-function Controls({ rest, now, onChange, compact }: Props & { compact?: boolean }) {
+function Controls({ rest, now, onChange, compact }: Props & { now: number; compact?: boolean }) {
   const btn = `tap rounded-lg bg-surface-2 px-2 text-sm font-semibold tabular-nums hover:bg-champ/[0.07] ${compact ? 'min-h-[40px]' : ''}`;
   return (
     <div className="flex items-center gap-1.5">
@@ -31,7 +31,10 @@ function Controls({ rest, now, onChange, compact }: Props & { compact?: boolean 
 
 /** Rustbalk tussen de sets. */
 export function RestBar(props: Props) {
-  const { rest, now } = props;
+  const { rest } = props;
+  // Eigen klok: enkel deze balk tikt elke seconde, niet het hele workoutscherm.
+  const now = useNow(1000);
+  if (rest.endsAt <= now) return null;
   const p = restProgress(rest, now);
   return (
     <div className="my-1 flex items-center gap-3 rounded-xl border border-accent/25 bg-primary-soft px-3 py-1.5" role="timer" aria-live="off">
@@ -39,14 +42,16 @@ export function RestBar(props: Props) {
         <span className="absolute inset-y-0 left-0" style={{ width: `${(1 - p) * 100}%` }} />
       </div>
       <span className="w-12 text-right text-sm font-semibold tabular-nums text-accent">{formatClock(restRemainingSec(rest, now))}</span>
-      <Controls {...props} compact />
+      <Controls {...props} now={now} compact />
     </div>
   );
 }
 
 /** Zwevende mini-timer onderaan het workoutscherm. */
 export function FloatingRest(props: Props) {
-  const { rest, now } = props;
+  const { rest } = props;
+  const now = useNow(1000);
+  if (rest.endsAt <= now) return null;
   const p = restProgress(rest, now);
   return (
     <div className="pointer-events-auto mx-auto flex w-full max-w-md items-center gap-3 rounded-2xl border border-accent/50 bg-surface px-3 py-2 shadow-pop">
@@ -61,7 +66,7 @@ export function FloatingRest(props: Props) {
         <p className="text-[11px] uppercase tracking-wide text-muted">Rust</p>
         <p className="text-xl font-bold tabular-nums leading-tight">{formatClock(restRemainingSec(rest, now))}</p>
       </div>
-      <Controls {...props} />
+      <Controls {...props} now={now} />
     </div>
   );
 }

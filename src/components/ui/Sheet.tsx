@@ -45,7 +45,7 @@ export function Sheet({ open, onClose, title, action, children, footer, full }: 
 
   return createPortal(
     <div className={`fixed inset-0 z-50 flex ${full ? '' : 'items-end md:items-center'} justify-center`} role="presentation">
-      {!full && <div className="absolute inset-0 bg-[var(--overlay)] backdrop-blur-[2px]" onClick={onClose} aria-hidden />}
+      {!full && <div className="absolute inset-0 bg-[var(--overlay)]" onClick={onClose} aria-hidden />}
       <div
         ref={panel}
         tabIndex={-1}

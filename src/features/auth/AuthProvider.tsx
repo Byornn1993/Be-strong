@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase/client';
+import { AUTH_STORAGE_KEY, supabase } from '@/lib/supabase/client';
 import { supabaseRemote } from '@/lib/supabase/remote';
 import { closeDb, openDb } from '@/lib/db/schema';
 import { setSessionUser } from '@/lib/db/session';
@@ -16,9 +16,26 @@ interface AuthState {
 
 const AuthContext = createContext<AuthState>({ session: null, loading: true, ready: false });
 
+/**
+ * De opgeslagen sessie meteen lezen. supabase.auth.getSession() wacht bij een verlopen token op het
+ * vernieuwen via het netwerk; op een trage gsm-verbinding (of na "Herladen") bleef de app daardoor
+ * seconden op "laden" hangen. Local-first: met de opgeslagen sessie opent de app meteen, het
+ * vernieuwen gebeurt op de achtergrond.
+ */
+function storedSession(): Session | null {
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) return null;
+    const s = JSON.parse(raw) as Session;
+    return s?.user?.id ? s : null;
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState<Session | null>(() => (supabase ? storedSession() : null));
+  const [loading, setLoading] = useState(() => !session);
   const [readyFor, setReadyFor] = useState<string | null>(null);
 
   useEffect(() => {
@@ -26,12 +43,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
       return;
     }
-    // getSession werkt ook offline: de sessie staat lokaal. Zo opent de app zonder netwerk.
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
+    // Kan het token niet vernieuwd worden door een netwerkfout (offline, slecht bereik), dan blijft de
+    // opgeslagen sessie gelden: lokaal verder werken, later synchroniseren. Is de login echt ongeldig,
+    // dan meldt Supabase SIGNED_OUT via onAuthStateChange.
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (data.session || !error) setSession(data.session);
       setLoading(false);
     });
-    const { data } = supabase.auth.onAuthStateChange((_event, s) => setSession(s));
+    const { data } = supabase.auth.onAuthStateChange((event, s) => {
+      if (s || event === 'SIGNED_OUT') setSession(s);
+    });
     return () => data.subscription.unsubscribe();
   }, []);
 

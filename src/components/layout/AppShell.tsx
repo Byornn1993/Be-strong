@@ -7,7 +7,7 @@ import { ErrorBoundary, Spinner } from '@/components/ui/States';
 import { ActiveWorkoutBar } from './ActiveWorkoutBar';
 import { SyncIndicator } from './SyncIndicator';
 import { useSyncStatus } from '@/lib/sync/status';
-import { useActiveWorkout } from '@/features/workout/WorkoutProvider';
+import { useWorkoutStatus } from '@/features/workout/WorkoutProvider';
 import { ActiveWorkoutSheet } from '@/features/workout/ActiveWorkoutSheet';
 
 const NAV = [
@@ -65,7 +65,7 @@ function SideItem({ to, label, icon: Icon, primary }: Item) {
 }
 
 export function AppShell({ children }: { children?: ReactNode }) {
-  const { active, sheetOpen } = useActiveWorkout();
+  const { hasActive: active, sheetOpen } = useWorkoutStatus();
   const location = useLocation();
   const sync = useSyncStatus();
 
@@ -114,7 +114,7 @@ export function AppShell({ children }: { children?: ReactNode }) {
       {/* Onderste menu onder 900px */}
       <nav
         aria-label="Hoofdnavigatie"
-        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-card-line bg-side backdrop-blur-md desk:hidden"
+        className="fixed inset-x-0 bottom-0 z-30 flex border-t border-card-line bg-bg desk:hidden"
         style={{ paddingBottom: 'var(--safe-bottom)', height: 'calc(var(--nav-h) + var(--safe-bottom))' }}
       >
         {NAV.map((n) => (

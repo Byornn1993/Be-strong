@@ -11,7 +11,7 @@ import { formatDuration, formatNumber, formatVolume } from '@/domain/format';
 import { saveTemplate } from '@/lib/db/repo';
 import { countSets, differsFromTemplate, templateFromWorkout, toFinishedWorkout } from './logic';
 import { finishActive } from './activeStore';
-import { useActiveWorkout } from './WorkoutProvider';
+import { useWorkoutActions } from './WorkoutProvider';
 
 export function formatPr(p: NewPr): string {
   const unit = p.kind === 'repsAtWeight' ? ' reps' : p.kind === 'longestDuration' ? ' s' : p.kind === 'longestDistance' ? ' m' : ' kg';
@@ -33,7 +33,7 @@ export function FinishSheet({
   template: Template | null;
 }) {
   const navigate = useNavigate();
-  const { flush, clearAfterFinish } = useActiveWorkout();
+  const { flush, clearAfterFinish } = useWorkoutActions();
   const [note, setNote] = useState(active.note ?? '');
   const [keepUnchecked, setKeepUnchecked] = useState(false);
   const [updateTemplate, setUpdateTemplate] = useState(false);

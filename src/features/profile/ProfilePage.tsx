@@ -14,7 +14,7 @@ import { streakWeeks } from '@/domain/stats';
 import { goalProgress } from '@/domain/goals';
 import { BODYWEIGHT_TYPE_ID } from '@/data/measurementTypes';
 import { useAuth } from '@/features/auth/AuthProvider';
-import { useActiveWorkout } from '@/features/workout/WorkoutProvider';
+import { useWorkoutActions, useWorkoutStatus } from '@/features/workout/WorkoutProvider';
 import { newActiveWorkout, reorderExercises } from '@/features/workout/logic';
 import { DEFAULT_WIDGETS, SMALL_WIDGETS, WIDGET_LABELS, Widget } from './widgets';
 
@@ -26,7 +26,8 @@ export default function ProfilePage() {
   const goals = useGoals();
   const exercises = useExerciseMap();
   const stored = useWidgets();
-  const { start, active } = useActiveWorkout();
+  const { start } = useWorkoutActions();
+  const { hasActive: active } = useWorkoutStatus();
   const [editing, setEditing] = useState<WidgetKind[] | null>(null);
   const [goalSheet, setGoalSheet] = useState(false);
   const now = useMemo(() => new Date(), []);

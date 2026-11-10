@@ -1,29 +1,63 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, ChevronDown, Link2, Pause, Play, Plus, RefreshCw, Timer, Trash2 } from 'lucide-react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowDown, ArrowUp, ChevronDown, GripVertical, Link2, Pause, Play, Plus, RefreshCw, Timer, Trash2 } from 'lucide-react';
+import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core';
+import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Sheet } from '@/components/ui/Sheet';
 import { Button, IconButton } from '@/components/ui/Button';
 import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/States';
+import { UndoToast, type UndoInfo } from '@/components/ui/UndoToast';
 import { useExercisePrefs, useProfile, useTemplate, useWorkouts } from '@/lib/db/hooks';
-import type { Exercise, RestTimerState, WorkoutExercise } from '@/lib/db/types';
+import type { ActiveWorkout, Exercise, RestTimerState, WorkoutExercise, WorkoutSet } from '@/lib/db/types';
 import { findPreviousSets } from '@/domain/previous';
 import { hasValues } from '@/domain/exerciseTypes';
-import { pause, restRemainingSec, resume, startRest, workoutElapsedSec } from '@/domain/timer';
+import { pause, resume, startRest, workoutElapsedSec } from '@/domain/timer';
 import { formatClock } from '@/domain/format';
 import { formatLongDate } from '@/domain/dates';
 import { useNow } from '@/lib/useNow';
 import { ExercisePicker } from '@/features/exercises/ExercisePicker';
 import { useActiveWorkout } from './WorkoutProvider';
-import { ExerciseBlock } from './ExerciseBlock';
+import { ExerciseBlock, type ExerciseActions } from './ExerciseBlock';
 import { FloatingRest, useRestAlarm } from './RestTimer';
 import { FinishSheet } from './FinishSheet';
 import { primeAudio, requestWakeLock, vibrate } from './alerts';
 import { setInputId } from './SetRow';
 import * as L from './logic';
 
+const EMPTY: WorkoutSet[] = [];
+
+/** Workoutklok in de kop: enkel dit stukje tikt elke seconde. */
+function ElapsedClock({ startedAt, pausedAt, pausedMs }: Pick<ActiveWorkout, 'startedAt' | 'pausedAt' | 'pausedMs'>) {
+  const now = useNow(1000);
+  return <div className="flex-1 text-center text-sm font-semibold tabular-nums text-muted">{formatClock(workoutElapsedSec({ startedAt, pausedAt, pausedMs }, now))}</div>;
+}
+
+type BlockProps = Omit<Parameters<typeof ExerciseBlock>[0], 'handle' | 'dragging'>;
+
+/** Oefening die je met de greep (⋮⋮) met je vinger kan verslepen. */
+const SortableExercise = memo(function SortableExercise(props: BlockProps) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: props.we.id });
+  const handle = (
+    <button
+      type="button"
+      className="tap -ml-2 flex touch-none items-center justify-center rounded-lg text-faint hover:text-text active:text-accent"
+      aria-label={`${props.we.exerciseName} verslepen`}
+      {...attributes}
+      {...listeners}
+    >
+      <GripVertical size={20} />
+    </button>
+  );
+  return (
+    <div ref={setNodeRef} style={{ transform: CSS.Translate.toString(transform), transition }}>
+      <ExerciseBlock {...props} handle={handle} dragging={isDragging} />
+    </div>
+  );
+});
+
 export function ActiveWorkoutSheet() {
   const { active, sheetOpen, closeSheet, update, discard } = useActiveWorkout();
-  const now = useNow(1000, sheetOpen);
   const workouts = useWorkouts();
   const prefs = useExercisePrefs();
   const profile = useProfile();
@@ -34,6 +68,9 @@ export function ActiveWorkoutSheet() {
   const [menuFor, setMenuFor] = useState<WorkoutExercise | null>(null);
   const [finishOpen, setFinishOpen] = useState(false);
   const [timerMenu, setTimerMenu] = useState(false);
+  const [undo, setUndo] = useState<UndoInfo | null>(null);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const closeUndo = useCallback(() => setUndo(null), []);
 
   // Scherm aan houden tijdens de workout (waar ondersteund).
   useEffect(() => {
@@ -57,76 +94,131 @@ export function ActiveWorkoutSheet() {
 
   useRestAlarm(active?.rest ?? null, () => update((w) => ({ ...w, rest: null })));
 
+  const activeRef = useRef(active);
+  activeRef.current = active;
+
+  // "Vorige" hangt alleen af van welke oefeningen er staan, niet van wat je intypt.
+  const structureKey = active ? `${active.startedAt}|${active.exercises.map((e) => `${e.id}:${e.exerciseId ?? e.exerciseName}`).join('|')}` : '';
+  const supersetKey = active ? active.exercises.map((e) => e.supersetGroup ?? '').join('|') : '';
   const previousByWe = useMemo(() => {
-    const m = new Map<string, ReturnType<typeof findPreviousSets>>();
-    if (!active || !workouts) return m;
-    for (const we of active.exercises) m.set(we.id, findPreviousSets(workouts, we, active.startedAt));
+    const m = new Map<string, WorkoutSet[]>();
+    const a = activeRef.current;
+    if (!a || !workouts) return m;
+    for (const we of a.exercises) m.set(we.id, findPreviousSets(workouts, we, a.startedAt));
     return m;
-  }, [active, workouts]);
+  }, [structureKey, workouts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const supersetLabels = useMemo(() => {
     const m = new Map<string, string>();
-    if (!active) return m;
-    const groups = [...new Set(active.exercises.map((e) => e.supersetGroup).filter(Boolean))] as string[];
-    for (const we of active.exercises) if (we.supersetGroup) m.set(we.id, `Superset ${String.fromCharCode(65 + groups.indexOf(we.supersetGroup))}`);
+    const a = activeRef.current;
+    if (!a) return m;
+    const groups = [...new Set(a.exercises.map((e) => e.supersetGroup).filter(Boolean))] as string[];
+    for (const we of a.exercises) if (we.supersetGroup) m.set(we.id, `Superset ${String.fromCharCode(65 + groups.indexOf(we.supersetGroup))}`);
     return m;
-  }, [active]);
-
-  if (!active) return null;
+  }, [structureKey, supersetKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const restSecFor = (we: WorkoutExercise) =>
     we.restSec ?? prefs?.find((p) => p.exerciseId === we.exerciseId)?.restSec ?? profile?.defaultRestSec ?? 120;
+  const live = useRef({ previousByWe, restSecFor });
+  live.current = { previousByWe, restSecFor };
 
-  const toggleSet = (we: WorkoutExercise, setId: string) => {
-    const s = we.sets.find((x) => x.id === setId);
-    if (!s) return;
-    if (s.completed) {
-      update((w) => L.updateSet(w, we.id, setId, { completed: false, completedAt: null }));
-      return;
-    }
-    let values = { weightKg: s.weightKg, reps: s.reps, durationSec: s.durationSec, distanceM: s.distanceM };
-    if (!hasValues(we.exerciseType, values)) {
-      // Lege set afvinken = de vorige waarden (placeholder) overnemen, zoals in Strong.
-      const idx = we.sets.indexOf(s);
-      const prev = previousByWe.get(we.id)?.[idx];
-      if (prev) values = { weightKg: prev.weightKg, reps: prev.reps, durationSec: prev.durationSec, distanceM: prev.distanceM };
-    }
-    if (!hasValues(we.exerciseType, values)) {
-      vibrate(40);
-      document.getElementById(setInputId(setId))?.focus();
-      return;
-    }
-    primeAudio();
-    vibrate(15);
-    const idx = active.exercises.findIndex((e) => e.id === we.id);
-    const nextInSuperset = we.supersetGroup && active.exercises[idx + 1]?.supersetGroup === we.supersetGroup;
-    const t = Date.now();
-    let rest: RestTimerState | null = active.rest;
-    if (!nextInSuperset) {
-      const secs = restSecFor(we);
-      rest = secs > 0 ? { ...startRest(secs, t, we.id), afterSetId: setId } : null;
-    }
-    const next = L.updateSet(active, we.id, setId, { ...values, completed: true, completedAt: new Date(t).toISOString() });
-    update(() => ({ ...next, rest }));
-    // Focus naar de volgende open set (binnen dezelfde gebruikersactie → toetsenbord opent op iOS).
-    const target = nextInSuperset ? (() => {
-      const nwe = active.exercises[idx + 1]!;
-      const si = we.sets.findIndex((x) => x.id === setId);
-      const ns = nwe.sets[si] ?? nwe.sets.find((x) => !x.completed);
-      return ns && !ns.completed ? { setId: ns.id } : null;
-    })() : L.nextOpenSet(next, we.id, setId);
-    if (target) {
-      const el = document.getElementById(setInputId(target.setId));
-      el?.focus({ preventScroll: true });
-      el?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-    }
+  // Stabiele handlers: lezen altijd de nieuwste stand via refs, zodat gememoïseerde oefeningen kloppen.
+  const actions = useMemo<ExerciseActions>(
+    () => ({
+      onSetChange: (weId, setId, patch) => update((w) => L.updateSet(w, weId, setId, patch)),
+      onAddSet: (weId) => update((w) => L.addSet(w, weId)),
+      onMenu: (weId) => setMenuFor(activeRef.current?.exercises.find((e) => e.id === weId) ?? null),
+      onRestChange: (r) => update((w) => ({ ...w, rest: r })),
+      onRemoveSet: (weId, setId) => {
+        const we = activeRef.current?.exercises.find((e) => e.id === weId);
+        const index = we?.sets.findIndex((s) => s.id === setId) ?? -1;
+        if (!we || index < 0) return;
+        const removed = we.sets[index]!;
+        update((w) => L.removeSet(w, weId, setId));
+        setUndo({
+          id: Date.now(),
+          text: `Set verwijderd uit ${we.exerciseName}`,
+          undo: () =>
+            update((w) =>
+              L.updateExercise(w, weId, (e) => {
+                if (e.sets.some((s) => s.id === removed.id)) return e;
+                const sets = [...e.sets];
+                sets.splice(Math.min(index, sets.length), 0, removed);
+                return { ...e, sets };
+              }),
+            ),
+        });
+      },
+      onToggle: (weId, setId) => {
+        const a = activeRef.current;
+        const we = a?.exercises.find((e) => e.id === weId);
+        const s = we?.sets.find((x) => x.id === setId);
+        if (!a || !we || !s) return;
+        if (s.completed) {
+          update((w) => L.updateSet(w, weId, setId, { completed: false, completedAt: null }));
+          return;
+        }
+        let values = { weightKg: s.weightKg, reps: s.reps, durationSec: s.durationSec, distanceM: s.distanceM };
+        if (!hasValues(we.exerciseType, values)) {
+          // Lege set afvinken = de vorige waarden (placeholder) overnemen, zoals in Strong.
+          const prev = live.current.previousByWe.get(weId)?.[we.sets.indexOf(s)];
+          if (prev) values = { weightKg: prev.weightKg, reps: prev.reps, durationSec: prev.durationSec, distanceM: prev.distanceM };
+        }
+        if (!hasValues(we.exerciseType, values)) {
+          vibrate(40);
+          document.getElementById(setInputId(setId))?.focus();
+          return;
+        }
+        primeAudio();
+        vibrate(15);
+        const idx = a.exercises.findIndex((e) => e.id === weId);
+        const nextInSuperset = we.supersetGroup && a.exercises[idx + 1]?.supersetGroup === we.supersetGroup;
+        const t = Date.now();
+        let rest: RestTimerState | null = a.rest;
+        if (!nextInSuperset) {
+          const secs = live.current.restSecFor(we);
+          rest = secs > 0 ? { ...startRest(secs, t, weId), afterSetId: setId } : null;
+        }
+        const next = L.updateSet(a, weId, setId, { ...values, completed: true, completedAt: new Date(t).toISOString() });
+        update(() => ({ ...next, rest }));
+        // Focus naar de volgende open set (binnen dezelfde gebruikersactie → toetsenbord opent op iOS).
+        const target = nextInSuperset
+          ? (() => {
+              const nwe = a.exercises[idx + 1]!;
+              const si = we.sets.findIndex((x) => x.id === setId);
+              const ns = nwe.sets[si] ?? nwe.sets.find((x) => !x.completed);
+              return ns && !ns.completed ? { setId: ns.id } : null;
+            })()
+          : L.nextOpenSet(next, weId, setId);
+        if (target) {
+          const el = document.getElementById(setInputId(target.setId));
+          el?.focus({ preventScroll: true });
+          el?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+      },
+    }),
+    [update],
+  );
+
+  // Verslepen met de vinger: start meteen op de greep (die heeft touch-action: none).
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+  const onDragStart = (e: DragStartEvent) => {
+    setDragId(String(e.active.id));
+    vibrate(10);
   };
+  const onDragEnd = (e: DragEndEvent) => {
+    setDragId(null);
+    const over = e.over;
+    if (over && e.active.id !== over.id) update((w) => ({ ...w, exercises: L.reorderExercises(w.exercises, String(e.active.id), String(over.id)) }));
+  };
+
+  if (!active) return null;
 
   const addExercises = (list: Exercise[]) =>
     update((w) => ({ ...w, exercises: [...w.exercises, ...list.map((ex) => L.workoutExerciseFrom(ex, 3, null))] }));
-
-  const elapsed = workoutElapsedSec(active, now);
-  const restLeft = restRemainingSec(active.rest, now);
 
   const cancelWorkout = async () => {
     if (await confirm({ title: 'Workout annuleren?', message: 'Alle ingevulde sets van deze workout gaan verloren.', confirmLabel: 'Annuleren', danger: true })) {
@@ -134,16 +226,18 @@ export function ActiveWorkoutSheet() {
     }
   };
 
+  const dragged = dragId ? active.exercises.find((e) => e.id === dragId) : null;
+
   return (
     <Sheet open={sheetOpen} onClose={closeSheet} full>
       <div className="flex min-h-full flex-col">
-        {/* Kop */}
-        <div className="sticky top-0 z-20 border-b border-border bg-bg/50 px-2 py-2 backdrop-blur-md">
+        {/* Kop met effen achtergrond: een wazige laag maakt scrollen op iPhone traag */}
+        <div className="sticky top-0 z-20 border-b border-border bg-bg px-2 py-2">
           <div className="flex items-center gap-1">
             <IconButton label="Minimaliseren" onClick={closeSheet}>
               <ChevronDown size={24} />
             </IconButton>
-            <IconButton label="Rusttimer" onClick={() => setTimerMenu(true)} className={restLeft > 0 ? 'text-accent' : ''}>
+            <IconButton label="Rusttimer" onClick={() => setTimerMenu(true)} className={active.rest ? 'text-accent' : ''}>
               <Timer size={22} />
             </IconButton>
             <IconButton
@@ -153,7 +247,7 @@ export function ActiveWorkoutSheet() {
             >
               {active.pausedAt ? <Play size={22} /> : <Pause size={22} />}
             </IconButton>
-            <div className="flex-1 text-center text-sm font-semibold tabular-nums text-muted">{formatClock(elapsed)}</div>
+            <ElapsedClock startedAt={active.startedAt} pausedAt={active.pausedAt} pausedMs={active.pausedMs} />
             <Button variant="primary" onClick={() => setFinishOpen(true)} className="px-5">
               Finish
             </Button>
@@ -172,31 +266,39 @@ export function ActiveWorkoutSheet() {
               {formatLongDate(active.startedAt)}
               {active.pausedAt && <span className="ml-2 text-warn">· gepauzeerd</span>}
             </p>
+            {active.exercises.length > 0 && (
+              <p className="mt-1 text-xs text-faint">Tip: veeg een set naar links om ze te verwijderen · sleep ⋮⋮ om een oefening te verplaatsen.</p>
+            )}
           </div>
 
           {active.exercises.length === 0 ? (
             <EmptyState title="Nog geen oefeningen" text="Voeg je eerste oefening toe om sets te loggen." />
           ) : (
-            <div className="divide-y divide-border">
-              {active.exercises.map((we) => (
-                <ExerciseBlock
-                  key={we.id}
-                  we={we}
-                  previous={previousByWe.get(we.id) ?? []}
-                  rest={active.rest}
-                  now={now}
-                  supersetLabel={supersetLabels.get(we.id) ?? null}
-                  actions={{
-                    onSetChange: (setId, patch) => update((w) => L.updateSet(w, we.id, setId, patch)),
-                    onToggle: (setId) => toggleSet(we, setId),
-                    onAddSet: () => update((w) => L.addSet(w, we.id)),
-                    onRemoveSet: (setId) => update((w) => L.removeSet(w, we.id, setId)),
-                    onMenu: () => setMenuFor(we),
-                    onRestChange: (r) => update((w) => ({ ...w, rest: r })),
-                  }}
-                />
-              ))}
-            </div>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={onDragStart} onDragEnd={onDragEnd} onDragCancel={() => setDragId(null)}>
+              <SortableContext items={active.exercises.map((e) => e.id)} strategy={verticalListSortingStrategy}>
+                <div className="divide-y divide-border">
+                  {active.exercises.map((we) => (
+                    <SortableExercise
+                      key={we.id}
+                      we={we}
+                      previous={previousByWe.get(we.id) ?? EMPTY}
+                      rest={active.rest && active.rest.workoutExerciseId === we.id ? active.rest : null}
+                      supersetLabel={supersetLabels.get(we.id) ?? null}
+                      actions={actions}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+              <DragOverlay dropAnimation={null}>
+                {dragged && (
+                  <div className="flex items-center gap-2 rounded-card border border-accent bg-surface px-3 py-3 shadow-pop">
+                    <GripVertical size={20} className="text-accent" />
+                    <span className="min-w-0 flex-1 truncate font-semibold text-accent">{dragged.exerciseName}</span>
+                    <span className="text-xs text-muted">{dragged.sets.length} sets</span>
+                  </div>
+                )}
+              </DragOverlay>
+            </DndContext>
           )}
 
           <div className="space-y-2 px-4 pt-4">
@@ -210,12 +312,14 @@ export function ActiveWorkoutSheet() {
         </div>
 
         {/* Zwevende mini-timer (één hand: onderaan) */}
-        {active.rest && restLeft > 0 && (
+        {active.rest && (
           <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-3" style={{ paddingBottom: 'calc(var(--safe-bottom) + 12px)' }}>
-            <FloatingRest rest={active.rest} now={now} onChange={(r) => update((w) => ({ ...w, rest: r }))} />
+            <FloatingRest rest={active.rest} onChange={actions.onRestChange} />
           </div>
         )}
       </div>
+
+      <UndoToast info={undo} onClose={closeUndo} />
 
       <ExercisePicker
         open={!!picker}

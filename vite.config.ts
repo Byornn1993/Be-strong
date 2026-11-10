@@ -51,6 +51,8 @@ export default defineConfig({
       workbox: {
         // Alleen de app-shell en statische assets. Geen Supabase/API-responses.
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        // Alleen het Latijnse lettertype vooraf laden: Grieks/Cyrillisch/Vietnamees worden niet gebruikt.
+        globIgnores: ['**/inter-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese}-*.woff2'],
         navigateFallback: `${base}index.html`,
         navigateFallbackDenylist: [/^\/auth\//],
         runtimeCaching: [],
