@@ -1,6 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { ActiveWorkout } from '@/lib/db/types';
 import { discardActive, loadActive, saveActive } from './activeStore';
+import { createWriteQueue } from './writeQueue';
 
 // Drie contexten, zodat een toetsaanslag in een set niet de hele app opnieuw laat tekenen:
 //  - Actions: stabiele functies (veranderen nooit)
@@ -38,36 +39,8 @@ export function WorkoutProvider({ children }: { children: ReactNode }) {
   const [sheetOpen, setSheetOpen] = useState(false);
   const latest = useRef<ActiveWorkout | null>(null);
 
-  // Opslaan: altijd de nieuwste versie, nooit een oudere over een nieuwere. Tijdens snel typen
-  // worden tussenversies overgeslagen: er staat hooguit één schrijfactie in de wachtrij.
-  const writing = useRef<Promise<void> | null>(null);
-  const pending = useRef<ActiveWorkout | null>(null);
-
-  const drain = useCallback((): Promise<void> => {
-    if (writing.current) return writing.current;
-    const run = async () => {
-      while (pending.current) {
-        const next = pending.current;
-        pending.current = null;
-        try {
-          await saveActive(next);
-        } catch (e) {
-          console.error('Opslaan workout mislukt', e);
-        }
-      }
-      writing.current = null;
-    };
-    writing.current = run();
-    return writing.current;
-  }, []);
-
-  const persist = useCallback(
-    (a: ActiveWorkout) => {
-      pending.current = a;
-      void drain();
-    },
-    [drain],
-  );
+  // Opslaan: altijd de nieuwste versie; tijdens snel typen worden tussenversies overgeslagen.
+  const [queue] = useState(() => createWriteQueue<ActiveWorkout>(saveActive, (e) => console.error('Opslaan workout mislukt', e)));
 
   // Herstel na refresh/crash/afsluiten.
   useEffect(() => {
@@ -89,32 +62,33 @@ export function WorkoutProvider({ children }: { children: ReactNode }) {
         if (next === cur) return;
         latest.current = next;
         setActive(next);
-        persist(next);
+        queue.push(next);
       },
       start: async (w) => {
         latest.current = w;
         setActive(w);
-        persist(w);
-        await drain();
+        queue.push(w);
+        await queue.flush();
         setSheetOpen(true);
       },
       discard: async () => {
-        pending.current = null;
-        await drain();
+        queue.clear();
+        await queue.flush();
         await discardActive();
         latest.current = null;
         setActive(null);
         setSheetOpen(false);
       },
       clearAfterFinish: () => {
+        queue.clear();
         latest.current = null;
         setActive(null);
         setSheetOpen(false);
       },
-      flush: () => drain(),
+      flush: () => queue.flush(),
       getActive: () => latest.current,
     }),
-    [drain, persist],
+    [queue],
   );
 
   const hasActive = !!active;

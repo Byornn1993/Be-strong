@@ -16,6 +16,22 @@ interface SheetProps {
   labelledBy?: string;
 }
 
+/*
+ * Pagina niet laten scrollen achter een open sheet. Met een teller i.p.v. "vorige waarde onthouden":
+ * bij Finish/Verwijderen sluiten de workout-sheet en de Finish-sheet tegelijk, en dan zette de
+ * binnenste sheet "overflow: hidden" terug nadat de buitenste het al had vrijgegeven. Gevolg: nergens
+ * in de app kon je nog scrollen.
+ */
+let openSheets = 0;
+function lockScroll() {
+  openSheets += 1;
+  document.body.style.overflow = 'hidden';
+}
+function unlockScroll() {
+  openSheets = Math.max(0, openSheets - 1);
+  if (openSheets === 0) document.body.style.overflow = '';
+}
+
 /** Bottom sheet op mobiel, gecentreerde modal op grotere schermen. Esc en tik op de achtergrond sluiten. */
 export function Sheet({ open, onClose, title, action, children, footer, full }: SheetProps) {
   const titleId = useId();
@@ -31,12 +47,11 @@ export function Sheet({ open, onClose, title, action, children, footer, full }: 
     const prev = document.activeElement as HTMLElement | null;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closeRef.current();
     window.addEventListener('keydown', onKey);
-    const overflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    lockScroll();
     panel.current?.focus();
     return () => {
       window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = overflow;
+      unlockScroll();
       prev?.focus?.();
     };
   }, [open]);
