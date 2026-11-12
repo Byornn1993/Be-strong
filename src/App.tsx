@@ -5,6 +5,7 @@ import { WorkoutProvider } from '@/features/workout/WorkoutProvider';
 import { AppShell } from '@/components/layout/AppShell';
 import { Spinner } from '@/components/ui/States';
 import { UpdatePrompt } from '@/components/layout/UpdatePrompt';
+import { OpeningDb } from '@/features/auth/DbProblem';
 
 // Lazy loading per route
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
@@ -26,10 +27,10 @@ const SyncPage = lazy(() => import('@/features/settings/SyncPage'));
 
 /** Beschermde routes: zonder sessie geen lokale database en geen data. */
 function Protected() {
-  const { session, loading, ready } = useAuth();
+  const { session, loading, ready, dbError } = useAuth();
   if (loading) return <Spinner label="Be Strong laden…" />;
   if (!session) return <Navigate to="/login" replace />;
-  if (!ready) return <Spinner label="Gegevens openen…" />;
+  if (!ready) return <OpeningDb userId={session.user.id} error={dbError} />;
   return (
     <WorkoutProvider>
       <AppShell>

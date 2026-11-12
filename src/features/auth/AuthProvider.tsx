@@ -12,9 +12,11 @@ interface AuthState {
   loading: boolean;
   /** true zodra de lokale database van deze gebruiker open is. */
   ready: boolean;
+  /** Foutmelding als de lokale database op dit toestel niet wil openen (bv. iOS-opslagfout). */
+  dbError: string | null;
 }
 
-const AuthContext = createContext<AuthState>({ session: null, loading: true, ready: false });
+const AuthContext = createContext<AuthState>({ session: null, loading: true, ready: false, dbError: null });
 
 /**
  * De opgeslagen sessie meteen lezen. supabase.auth.getSession() wacht bij een verlopen token op het
@@ -37,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(() => (supabase ? storedSession() : null));
   const [loading, setLoading] = useState(() => !session);
   const [readyFor, setReadyFor] = useState<string | null>(null);
+  const [dbError, setDbError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!supabase) {
@@ -70,18 +73,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const db = openDb(userId);
     let stop: (() => void) | null = null;
     let cancelled = false;
-    db.open().then(() => {
-      if (cancelled) return;
-      setReadyFor(userId);
-      stop = startSync(db, supabaseRemote(supabase!));
-    });
+    setDbError(null);
+    db.open().then(
+      () => {
+        if (cancelled) return;
+        setReadyFor(userId);
+        stop = startSync(db, supabaseRemote(supabase!));
+      },
+      (e: unknown) => {
+        if (cancelled) return;
+        console.error('Lokale database openen mislukt', e);
+        setDbError(e instanceof Error ? `${e.name}: ${e.message}` : String(e));
+      },
+    );
     return () => {
       cancelled = true;
       stop?.();
     };
   }, [userId]);
 
-  return <AuthContext.Provider value={{ session, loading, ready: !!userId && readyFor === userId }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ session, loading, ready: !!userId && readyFor === userId, dbError }}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);

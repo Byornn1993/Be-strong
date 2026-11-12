@@ -44,11 +44,13 @@ export function WorkoutProvider({ children }: { children: ReactNode }) {
 
   // Herstel na refresh/crash/afsluiten.
   useEffect(() => {
-    loadActive().then((a) => {
-      latest.current = a;
-      setActive(a);
-      setLoaded(true);
-    });
+    loadActive()
+      .then((a) => {
+        latest.current = a;
+        setActive(a);
+      })
+      .catch((e) => console.error('Lopende workout laden mislukt', e))
+      .finally(() => setLoaded(true));
   }, []);
 
   const actions = useMemo<WorkoutActions>(
