@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 // Signalen bij het einde van de rust. Alles met feature detection: de app werkt ook zonder.
 
 let ctx: AudioContext | null = null;
@@ -62,4 +63,26 @@ export async function requestWakeLock(): Promise<(() => void) | null> {
   } catch {
     return null;
   }
+}
+
+/** Houdt het scherm aan zolang `enabled` waar is; vraagt opnieuw aan na terugkeren naar de app. */
+export function useWakeLock(enabled: boolean): void {
+  useEffect(() => {
+    if (!enabled) return;
+    let release: (() => void) | null = null;
+    let cancelled = false;
+    const acquire = () =>
+      requestWakeLock().then((r) => {
+        if (cancelled) r?.();
+        else release = r;
+      });
+    void acquire();
+    const onVis = () => document.visibilityState === 'visible' && void acquire();
+    document.addEventListener('visibilitychange', onVis);
+    return () => {
+      cancelled = true;
+      release?.();
+      document.removeEventListener('visibilitychange', onVis);
+    };
+  }, [enabled]);
 }
