@@ -60,3 +60,6 @@ export function formatSet(type: ExerciseType, v: SetValues): string {
       return `${formatNumber(w ?? 0)} kg · ${formatDistance(v.distanceM ?? 0)}`;
   }
 }
+
+/** Getal zoals je het intypt: 82.5 → "82,5" (zonder duizendtallen of afronding; voor invoervelden). */
+export const toComma = (n: number): string => String(n).replace('.', ',');

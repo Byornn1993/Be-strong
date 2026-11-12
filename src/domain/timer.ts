@@ -1,5 +1,8 @@
 import type { ActiveWorkout, RestTimerState } from '@/lib/db/types';
 
+/** Standaard rusttijd tussen sets als er niets anders is ingesteld (seconden). */
+export const DEFAULT_REST_SEC = 120;
+
 // Rusttimer en workoutklok werken op basis van timestamps, niet met een tellende interval.
 // Daardoor blijven ze correct na het wisselen van app, vergrendelen of een refresh.
 

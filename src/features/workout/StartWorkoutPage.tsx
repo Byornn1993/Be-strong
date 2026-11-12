@@ -11,6 +11,7 @@ import { useExerciseMap, useLastPerformed, useTemplates } from '@/lib/db/hooks';
 import { cloneTemplate, deleteTemplate, saveTemplate } from '@/lib/db/repo';
 import type { Template } from '@/lib/db/types';
 import { formatDate } from '@/domain/dates';
+import { toComma } from '@/domain/format';
 import { MUSCLE_LABELS } from '@/domain/exerciseTypes';
 import { useWorkoutActions } from './WorkoutProvider';
 import { activeFromTemplate, newActiveWorkout } from './logic';
@@ -166,7 +167,7 @@ export default function StartWorkoutPage() {
                     <p className="text-xs text-muted">
                       {ex ? MUSCLE_LABELS[ex.primaryMuscle] : ''}
                       {te.sets[0]?.reps ? ` · ${te.sets[0].reps} reps` : ''}
-                      {te.sets[0]?.weightKg ? ` · ${String(te.sets[0].weightKg).replace('.', ',')} kg` : ''}
+                      {te.sets[0]?.weightKg ? ` · ${toComma(te.sets[0].weightKg)} kg` : ''}
                       {te.supersetGroup ? ' · superset' : ''}
                     </p>
                   </div>

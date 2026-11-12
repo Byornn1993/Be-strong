@@ -6,7 +6,7 @@ import { columnsFor, SET_TYPE_LABELS } from '@/domain/exerciseTypes';
 import { Sheet } from '@/components/ui/Sheet';
 import { Button } from '@/components/ui/Button';
 import { SwipeToDelete } from '@/components/SwipeToDelete';
-import { SetRow } from './SetRow';
+import { SetRow, setRowGrid } from './SetRow';
 import { RestBar } from './RestTimer';
 
 /** Handlers krijgen het id van de oefening mee, zodat ze stabiel blijven (geen nieuwe functie per render). */
@@ -68,7 +68,7 @@ export const ExerciseBlock = memo(
 
         <div
           className="grid gap-1.5 px-1 pb-1 text-[11px] font-semibold uppercase tracking-wide text-faint"
-          style={{ gridTemplateColumns: `40px minmax(0,1fr) ${cols.map(() => 'minmax(56px,72px)').join(' ')} 44px` }}
+          style={{ gridTemplateColumns: setRowGrid(cols.length) }}
           aria-hidden
         >
           <span className="text-center">Set</span>

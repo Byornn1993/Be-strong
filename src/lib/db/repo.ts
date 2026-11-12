@@ -16,6 +16,7 @@ import { notifyLocalChange } from '@/lib/sync/scheduler';
 import { entityKey } from '@/lib/sync/types';
 import * as M from '@/lib/sync/mappers';
 import { newId } from '@/lib/ids';
+import { DEFAULT_REST_SEC } from '@/domain/timer';
 
 // Alle schrijfacties van de app. Elke actie schrijft in ÉÉN lokale transactie zowel de data als de
 // outbox-operatie: een wijziging is dus nooit "lokaal opgeslagen maar vergeten te synchroniseren".
@@ -197,7 +198,7 @@ export const DEFAULT_PROFILE = (id: string): Profile => ({
   displayName: null,
   avatarUrl: null,
   weeklyWorkoutGoal: 3,
-  defaultRestSec: 120,
+  defaultRestSec: DEFAULT_REST_SEC,
   serverUpdatedAt: null,
 });
 

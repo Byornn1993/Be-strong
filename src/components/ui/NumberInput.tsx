@@ -1,3 +1,4 @@
+import { toComma } from '@/domain/format';
 import { forwardRef, useEffect, useState, type InputHTMLAttributes } from 'react';
 
 interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'type'> {
@@ -15,7 +16,7 @@ const parse = (s: string, integer: boolean): number | null => {
   return integer ? Math.round(n) : Math.round(n * 100) / 100;
 };
 
-const show = (v: number | null) => (v === null ? '' : String(v).replace('.', ','));
+const show = (v: number | null) => (v === null ? '' : toComma(v));
 
 /** Numeriek veld met decimaal toetsenbord op iPhone. Accepteert komma én punt. */
 export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(function NumberInput(

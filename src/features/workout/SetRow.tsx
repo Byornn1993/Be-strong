@@ -1,10 +1,14 @@
 import { Check } from 'lucide-react';
 import type { ExerciseType, SetValues, WorkoutSet } from '@/lib/db/types';
 import { columnsFor, setBadge } from '@/domain/exerciseTypes';
-import { formatSet } from '@/domain/format';
+import { formatSet, toComma } from '@/domain/format';
 import { DurationInput, NumberInput } from '@/components/ui/NumberInput';
 
 export const setInputId = (setId: string) => `set-in-${setId}`;
+
+/** Kolommen van een setrij: Set | Vorige | waarden… | ✓. Ook gebruikt voor de koprij in ExerciseBlock. */
+export const setRowGrid = (valueColumns: number) =>
+  `40px minmax(0,1fr) ${Array.from({ length: valueColumns }, () => 'minmax(56px,72px)').join(' ')} 44px`;
 
 const badgeColor: Record<WorkoutSet['type'], string> = {
   normal: 'text-text',
@@ -36,7 +40,7 @@ export function SetRow({
   return (
     <div
       className={`grid items-center gap-1.5 rounded-xl px-1 py-1 transition-colors ${done ? 'bg-pos/15' : ''}`}
-      style={{ gridTemplateColumns: `40px minmax(0,1fr) ${cols.map(() => 'minmax(56px,72px)').join(' ')} 44px` }}
+      style={{ gridTemplateColumns: setRowGrid(cols.length) }}
     >
       <button type="button" onClick={onBadge} className={`tap -my-1 rounded-lg text-sm font-bold ${badgeColor[set.type]}`} aria-label={`Set ${normalIndex}, type wijzigen`}>
         {setBadge(set.type, normalIndex)}
@@ -68,7 +72,7 @@ export function SetRow({
             aria-label={c.label}
             integer={c.field === 'reps'}
             value={set[c.field]}
-            placeholder={previous?.[c.field] != null ? String(previous[c.field]).replace('.', ',') : c.field === 'reps' ? '0' : '0'}
+            placeholder={previous?.[c.field] != null ? toComma(previous[c.field]!) : '0'}
             onValue={(v) => onChange({ [c.field]: v })}
             className={done ? 'bg-transparent' : ''}
           />

@@ -12,7 +12,7 @@ import { useExercisePrefs, useProfile, useTemplate, useWorkouts } from '@/lib/db
 import type { ActiveWorkout, Exercise, RestTimerState, WorkoutExercise, WorkoutSet } from '@/lib/db/types';
 import { findPreviousSets } from '@/domain/previous';
 import { hasValues } from '@/domain/exerciseTypes';
-import { pause, resume, startRest, workoutElapsedSec } from '@/domain/timer';
+import { DEFAULT_REST_SEC, pause, resume, startRest, workoutElapsedSec } from '@/domain/timer';
 import { formatClock } from '@/domain/format';
 import { formatLongDate } from '@/domain/dates';
 import { useNow } from '@/lib/useNow';
@@ -128,7 +128,7 @@ export function ActiveWorkoutSheet() {
   }, [structureKey, supersetKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const restSecFor = (we: WorkoutExercise) =>
-    we.restSec ?? prefs?.find((p) => p.exerciseId === we.exerciseId)?.restSec ?? profile?.defaultRestSec ?? 120;
+    we.restSec ?? prefs?.find((p) => p.exerciseId === we.exerciseId)?.restSec ?? profile?.defaultRestSec ?? DEFAULT_REST_SEC;
   const live = useRef({ previousByWe, restSecFor });
   live.current = { previousByWe, restSecFor };
 
@@ -339,7 +339,7 @@ export function ActiveWorkoutSheet() {
         we={menuFor}
         isLast={!!menuFor && active.exercises.at(-1)?.id === menuFor.id}
         isFirst={!!menuFor && active.exercises[0]?.id === menuFor.id}
-        defaultRest={menuFor ? restSecFor(menuFor) : 120}
+        defaultRest={menuFor ? restSecFor(menuFor) : DEFAULT_REST_SEC}
         onClose={() => setMenuFor(null)}
         onMove={(dir) => menuFor && update((w) => L.moveExercise(w, menuFor.id, dir))}
         onReplace={() => menuFor && setPicker({ mode: 'replace', weId: menuFor.id })}
