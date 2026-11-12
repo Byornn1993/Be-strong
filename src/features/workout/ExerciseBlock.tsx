@@ -104,7 +104,8 @@ export const ExerciseBlock = memo(
           })}
         </div>
 
-        <Button size="sm" variant="ghost" block className="mt-1 text-muted" icon={<Plus size={16} />} onClick={() => actions.onAddSet(we.id)}>
+        {/* Kernactie tijdens het trainen: volle duimhoogte (44px) en duidelijk zichtbaar */}
+        <Button block className="mt-2 border-dashed font-medium text-muted hover:text-text" icon={<Plus size={18} />} onClick={() => actions.onAddSet(we.id)}>
           Set toevoegen
         </Button>
 
