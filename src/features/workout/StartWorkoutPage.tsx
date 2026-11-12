@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Copy, FolderOpen, MoreHorizontal, Pencil, Plus, Trash2, Zap } from 'lucide-react';
+import { Copy, FolderOpen, MoreHorizontal, Pencil, Play, Plus, Trash2, Zap } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Button, IconButton } from '@/components/ui/Button';
 import { Sheet } from '@/components/ui/Sheet';
@@ -99,7 +99,7 @@ export default function StartWorkoutPage() {
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {list.map((t) => (
                     <div key={t.id} className="card relative transition hover:border-accent/40">
-                      <button type="button" className="block w-full p-4 pr-12 text-left" onClick={() => setPreview(t)}>
+                      <button type="button" className="block w-full p-4 pr-14 text-left" onClick={() => setPreview(t)}>
                         <p className="truncate text-[16px] font-semibold">{t.name}</p>
                         <p className="mt-1 line-clamp-2 text-sm text-muted">
                           {t.exercises
@@ -113,6 +113,16 @@ export default function StartWorkoutPage() {
                       <IconButton label={`Opties voor ${t.name}`} className="absolute right-1 top-1" onClick={() => setMenu(t)}>
                         <MoreHorizontal size={20} />
                       </IconButton>
+                      {/* Meteen starten zonder eerst de preview te openen */}
+                      <button
+                        type="button"
+                        aria-label={`${t.name} starten`}
+                        title="Start workout"
+                        onClick={() => startTemplate(t)}
+                        className="absolute bottom-2 right-2 flex h-11 w-11 items-center justify-center rounded-full bg-accent text-accent-ink shadow-gold transition active:scale-95"
+                      >
+                        <Play size={18} fill="currentColor" className="ml-0.5" />
+                      </button>
                     </div>
                   ))}
                 </div>
