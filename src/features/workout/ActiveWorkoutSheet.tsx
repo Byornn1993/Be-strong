@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, ChevronDown, GripVertical, Link2, Pause, Play, Plus, RefreshCw, Timer, Trash2 } from 'lucide-react';
-import { DndContext, DragOverlay, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core';
+import { DndContext, DragOverlay, KeyboardSensor, MouseSensor, TouchSensor, closestCenter, useSensor, useSensors, type DragEndEvent, type DragStartEvent } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Sheet } from '@/components/ui/Sheet';
@@ -41,7 +41,7 @@ const SortableExercise = memo(function SortableExercise(props: BlockProps) {
   const handle = (
     <button
       type="button"
-      className="tap -ml-2 flex touch-none items-center justify-center rounded-lg text-faint hover:text-text active:text-accent"
+      className="tap -ml-2 flex touch-none select-none items-center [-webkit-touch-callout:none] justify-center rounded-lg text-faint hover:text-text active:text-accent"
       aria-label={`${props.we.exerciseName} verslepen`}
       {...attributes}
       {...listeners}
@@ -71,6 +71,16 @@ export function ActiveWorkoutSheet() {
   const [undo, setUndo] = useState<UndoInfo | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const closeUndo = useCallback(() => setUndo(null), []);
+
+  // Workoutscherm dicht (na Finish, verwijderen of minimaliseren): alle tussenvensters resetten.
+  // Anders bleef "Finish" intern open staan en opende het bij de volgende workout onzichtbaar mee.
+  useEffect(() => {
+    if (sheetOpen) return;
+    setFinishOpen(false);
+    setTimerMenu(false);
+    setMenuFor(null);
+    setPicker(null);
+  }, [sheetOpen]);
 
   // Scherm aan houden tijdens de workout (waar ondersteund).
   useEffect(() => {
@@ -166,7 +176,11 @@ export function ActiveWorkoutSheet() {
         }
         if (!hasValues(we.exerciseType, values)) {
           vibrate(40);
-          document.getElementById(setInputId(setId))?.focus();
+          // Nog niets ingevuld en geen vorige waarde: kort laten schudden i.p.v. het toetsenbord te openen.
+          document.getElementById(setInputId(setId))?.closest('.grid')?.animate(
+            [{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' }],
+            { duration: 260 },
+          );
           return;
         }
         primeAudio();
@@ -181,28 +195,17 @@ export function ActiveWorkoutSheet() {
         }
         const next = L.updateSet(a, weId, setId, { ...values, completed: true, completedAt: new Date(t).toISOString() });
         update(() => ({ ...next, rest }));
-        // Focus naar de volgende open set (binnen dezelfde gebruikersactie → toetsenbord opent op iOS).
-        const target = nextInSuperset
-          ? (() => {
-              const nwe = a.exercises[idx + 1]!;
-              const si = we.sets.findIndex((x) => x.id === setId);
-              const ns = nwe.sets[si] ?? nwe.sets.find((x) => !x.completed);
-              return ns && !ns.completed ? { setId: ns.id } : null;
-            })()
-          : L.nextOpenSet(next, weId, setId);
-        if (target) {
-          const el = document.getElementById(setInputId(target.setId));
-          el?.focus({ preventScroll: true });
-          el?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-        }
+        // Geen toetsenbord openen na afvinken (was hinderlijk): eventueel open toetsenbord sluiten.
+        if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
       },
     }),
     [update],
   );
 
-  // Verslepen met de vinger: start meteen op de greep (die heeft touch-action: none).
+  // Verslepen, minder gevoelig: op gsm de greep eerst ±0,3 s vasthouden; met de muis pas na 10 px.
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 300, tolerance: 8 } }),
+    useSensor(MouseSensor, { activationConstraint: { distance: 10 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
   const onDragStart = (e: DragStartEvent) => {

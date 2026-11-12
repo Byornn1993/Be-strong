@@ -30,18 +30,20 @@ export function SwipeToDelete({ onDelete, children, label = 'Verwijderen' }: { o
     const dx = e.clientX - s.x;
     const dy = e.clientY - s.y;
     if (s.mode === 'pending') {
-      if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) {
+      // Minder gevoelig: elke merkbare verticale beweging = scrollen, geen veeg.
+      if (Math.abs(dy) > 8 && Math.abs(dy) * 1.2 > Math.abs(dx)) {
         s.mode = 'scroll';
         return;
       }
-      if (dx < -12 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx < -30 && Math.abs(dx) > Math.abs(dy) * 3) {
         s.mode = 'swipe';
         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
         // Toetsenbord dicht: anders verschuift de pagina tijdens het vegen.
         if (document.activeElement instanceof HTMLElement && row.current?.contains(document.activeElement)) document.activeElement.blur();
       } else return;
     }
-    s.dx = Math.min(0, dx);
+    // Pas tellen vanaf de startdrempel, zodat een korte schuif niets doet.
+    s.dx = Math.min(0, dx + 20);
     setX(s.dx, false);
   };
 
@@ -51,7 +53,8 @@ export function SwipeToDelete({ onDelete, children, label = 'Verwijderen' }: { o
     if (s.mode === 'swipe') {
       s.suppressClick = true;
       const width = row.current?.offsetWidth ?? 300;
-      if (s.dx < -Math.min(110, width * 0.35)) {
+      // Pas verwijderen na een duidelijke veeg (bijna de halve breedte).
+      if (s.dx < -Math.max(140, width * 0.45)) {
         setX(-width, true);
         if ('vibrate' in navigator) navigator.vibrate(20);
         setTimeout(() => {
