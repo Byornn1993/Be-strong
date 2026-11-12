@@ -15,6 +15,7 @@ import { GOAL_LABELS, goalProgress } from '@/domain/goals';
 import { formatDate } from '@/domain/dates';
 import { formatInt } from '@/domain/format';
 import { BODYWEIGHT_TYPE_ID } from '@/data/measurementTypes';
+import { toast } from '@/components/ui/Toast';
 
 export default function GoalsPage() {
   const goals = useGoals();
@@ -128,6 +129,7 @@ function GoalFormBody({ goal, onClose, exercises }: { goal: Goal | null; onClose
       serverUpdatedAt: goal?.serverUpdatedAt ?? null,
       deletedAt: null,
     });
+    toast('Doel bewaard');
     onClose();
   };
 

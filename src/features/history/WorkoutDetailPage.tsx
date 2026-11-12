@@ -17,6 +17,7 @@ import { completedSetCount, workoutVolume } from '@/domain/volume';
 import { formatDuration, formatSet, formatVolume } from '@/domain/format';
 import { emptySet, newTemplateFromWorkout } from '@/features/workout/logic';
 import { formatPr } from '@/features/workout/FinishSheet';
+import { toast } from '@/components/ui/Toast';
 
 export default function WorkoutDetailPage() {
   const { id } = useParams();
@@ -36,6 +37,7 @@ export default function WorkoutDetailPage() {
   const remove = async () => {
     if (await confirm({ title: 'Workout verwijderen?', message: `“${w.name}” van ${formatLongDate(w.startedAt)} wordt verwijderd.`, confirmLabel: 'Verwijderen', danger: true })) {
       await deleteWorkout(w.id);
+      toast('Workout verwijderd');
       navigate('/history');
     }
   };
@@ -43,6 +45,7 @@ export default function WorkoutDetailPage() {
   const asTemplate = async () => {
     const t = newTemplateFromWorkout(w);
     await saveTemplate(t);
+    toast('Template gemaakt');
     navigate(`/templates/${t.id}/edit`);
   };
 
@@ -51,6 +54,7 @@ export default function WorkoutDetailPage() {
     await saveWorkout({ ...draft, name: draft.name.trim() || 'Workout', endedAt: toLocalIso(new Date(Date.parse(draft.startedAt) + draft.durationSec * 1000)) });
     setSaving(false);
     setDraft(null);
+    toast('Workout bewaard');
   }} />;
 
   return (

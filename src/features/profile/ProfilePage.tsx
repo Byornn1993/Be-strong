@@ -17,6 +17,7 @@ import { useAuth } from '@/features/auth/AuthProvider';
 import { useWorkoutActions, useWorkoutStatus } from '@/features/workout/WorkoutProvider';
 import { newActiveWorkout, reorderExercises } from '@/features/workout/logic';
 import { DEFAULT_WIDGETS, SMALL_WIDGETS, WIDGET_LABELS, Widget } from './widgets';
+import { toast } from '@/components/ui/Toast';
 
 export default function ProfilePage() {
   const { session } = useAuth();
@@ -55,6 +56,7 @@ export default function ProfilePage() {
     }));
     const removed = stored.filter((w) => !list.includes(w.kind)).map((w) => ({ ...w, deletedAt: new Date().toISOString() }));
     await saveWidgets([...rows, ...removed]);
+    toast('Overzicht bewaard');
     setEditing(null);
   };
 
@@ -173,6 +175,7 @@ export default function ProfilePage() {
               variant={profile.weeklyWorkoutGoal === n ? 'primary' : 'secondary'}
               onClick={async () => {
                 await saveProfile({ ...profile, weeklyWorkoutGoal: n });
+                toast('Weekdoel bewaard');
                 setGoalSheet(false);
               }}
             >

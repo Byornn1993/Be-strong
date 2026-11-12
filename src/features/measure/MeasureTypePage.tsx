@@ -15,6 +15,7 @@ import { formatDate, formatShortDate } from '@/domain/dates';
 import { formatNumber } from '@/domain/format';
 import { MeasurementForm } from './MeasurementForm';
 import { Delta } from './MeasurePage';
+import { toast } from '@/components/ui/Toast';
 
 export default function MeasureTypePage() {
   const { typeId } = useParams();
@@ -93,6 +94,7 @@ export default function MeasureTypePage() {
                 onClick={async () => {
                   if (await confirm({ title: 'Meting verwijderen?', message: `${formatNumber(m.value)} ${m.unit} op ${formatDate(m.measuredAt)}`, confirmLabel: 'Verwijderen', danger: true }))
                     await deleteMeasurement(m.id);
+                    toast('Meting verwijderd');
                 }}
               >
                 <Trash2 size={18} />

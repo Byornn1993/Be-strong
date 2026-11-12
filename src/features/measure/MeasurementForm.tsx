@@ -7,6 +7,7 @@ import type { Measurement, MeasurementType } from '@/lib/db/types';
 import { saveMeasurement } from '@/lib/db/repo';
 import { newId } from '@/lib/ids';
 import { dayKey, isoToTimeInput, localInputToIso } from '@/domain/dates';
+import { toast } from '@/components/ui/Toast';
 
 const schema = z.object({ value: z.number().min(0).max(100000), date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/) });
 
@@ -59,6 +60,7 @@ export function MeasurementForm({
       serverUpdatedAt: measurement?.serverUpdatedAt ?? null,
       deletedAt: null,
     });
+    toast('Meting bewaard');
     onClose();
   };
 

@@ -20,6 +20,7 @@ import { supabase } from '@/lib/supabase/client';
 import { useAuth } from '@/features/auth/AuthProvider';
 import { requestNotificationPermission } from '@/features/workout/alerts';
 import { buildSeedTemplates } from './seedTemplates';
+import { toast } from '@/components/ui/Toast';
 
 function Row({ to, icon, label, hint }: { to: string; icon: React.ReactNode; label: string; hint?: string }) {
   return (
@@ -194,6 +195,7 @@ function ProfileForm({ profile }: { profile: Profile }) {
     const url = avatar.trim();
     await saveProfile({ ...profile, displayName: name.trim() || null, avatarUrl: url && /^https:\/\//.test(url) ? url : null, defaultRestSec: r });
     setSaved(true);
+    toast();
   };
   return (
     <form onSubmit={submit} className="space-y-3" onChange={() => setSaved(false)}>

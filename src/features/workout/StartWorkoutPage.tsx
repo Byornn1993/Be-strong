@@ -15,6 +15,7 @@ import { toComma } from '@/domain/format';
 import { MUSCLE_LABELS } from '@/domain/exerciseTypes';
 import { useWorkoutActions } from './WorkoutProvider';
 import { activeFromTemplate, newActiveWorkout } from './logic';
+import { toast } from '@/components/ui/Toast';
 
 export default function StartWorkoutPage() {
   const templates = useTemplates();
@@ -191,6 +192,7 @@ export default function StartWorkoutPage() {
               onClick={async () => {
                 await saveTemplate(cloneTemplate(menu, `${menu.name} (kopie)`));
                 setMenu(null);
+                toast('Template gedupliceerd');
               }}
             >
               Dupliceren
@@ -201,8 +203,10 @@ export default function StartWorkoutPage() {
               onClick={async () => {
                 const t = menu;
                 setMenu(null);
-                if (await confirm({ title: `“${t.name}” verwijderen?`, message: 'Je workoutgeschiedenis blijft bewaard.', confirmLabel: 'Verwijderen', danger: true }))
+                if (await confirm({ title: `“${t.name}” verwijderen?`, message: 'Je workoutgeschiedenis blijft bewaard.', confirmLabel: 'Verwijderen', danger: true })) {
                   await deleteTemplate(t.id);
+                  toast('Template verwijderd');
+                }
               }}
             >
               Verwijderen

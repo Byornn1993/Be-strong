@@ -15,6 +15,7 @@ import { summarizeMeasurements } from '@/domain/measurements';
 import { formatNumber } from '@/domain/format';
 import { formatDate } from '@/domain/dates';
 import { MeasurementForm } from './MeasurementForm';
+import { toast } from '@/components/ui/Toast';
 
 export function Delta({ diff, pct, unit }: { diff: number | null; pct: number | null; unit: string }) {
   if (diff === null) return null;
@@ -105,6 +106,7 @@ function NewTypeSheet({ open, onClose, count }: { open: boolean; onClose: () => 
       deletedAt: null,
     };
     await saveMeasurementType(t);
+    toast('Meettype toegevoegd');
     setName('');
     onClose();
   };

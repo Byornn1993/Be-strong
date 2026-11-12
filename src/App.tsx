@@ -6,6 +6,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { Spinner } from '@/components/ui/States';
 import { UpdatePrompt } from '@/components/layout/UpdatePrompt';
 import { OpeningDb } from '@/features/auth/DbProblem';
+import { Toaster } from '@/components/ui/Toast';
 
 // Lazy loading per route
 const LoginPage = lazy(() => import('@/features/auth/LoginPage'));
@@ -70,6 +71,7 @@ export default function App() {
           </Routes>
         </Suspense>
         <UpdatePrompt />
+        <Toaster />
       </AuthProvider>
     </BrowserRouter>
   );

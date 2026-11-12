@@ -16,6 +16,7 @@ import { computeRecords, PR_LABELS } from '@/domain/prs';
 import { formatDate, formatShortDate } from '@/domain/dates';
 import { formatNumber, formatSet, formatVolume, formatClock, formatDistance } from '@/domain/format';
 import { ExerciseForm } from './ExerciseForm';
+import { toast } from '@/components/ui/Toast';
 
 type Tab = 'about' | 'history' | 'charts' | 'records';
 
@@ -50,6 +51,7 @@ export default function ExerciseDetailPage() {
     });
     if (ok) {
       await deleteExercise(ex.id);
+      toast('Oefening verwijderd');
       navigate('/exercises');
     }
   };
@@ -235,6 +237,7 @@ function PrefCard({ exerciseId, notes, restSec }: { exerciseId: string; notes: s
         onClick={async () => {
           await saveExercisePref(exerciseId, { notes: n.trim() || null, restSec: r === '' ? null : Math.min(1800, Number(r)) });
           setSaved(true);
+          toast();
         }}
       >
         {saved ? 'Bewaard ✓' : 'Bewaren'}

@@ -7,6 +7,7 @@ import { EQUIPMENT_LABELS, MUSCLE_LABELS, TYPE_LABELS } from '@/domain/exerciseT
 import { saveExercise } from '@/lib/db/repo';
 import { requireUserId } from '@/lib/db/session';
 import { newId } from '@/lib/ids';
+import { toast } from '@/components/ui/Toast';
 
 const schema = z.object({
   name: z.string().trim().min(1, 'Naam is verplicht').max(120),
@@ -59,6 +60,7 @@ export function ExerciseForm({
         secondaryMuscles: parsed.data.secondaryMuscles.filter((m) => m !== parsed.data.primaryMuscle),
       };
       await saveExercise(ex);
+      toast('Oefening bewaard');
       onSaved?.(ex);
       onClose();
     } catch (err) {

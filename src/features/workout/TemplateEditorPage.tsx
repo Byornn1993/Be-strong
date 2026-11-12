@@ -12,6 +12,7 @@ import { saveTemplate } from '@/lib/db/repo';
 import type { Exercise, Template, TemplateExercise, TemplateSet } from '@/lib/db/types';
 import { newId } from '@/lib/ids';
 import { reorderExercises, toggleSupersetWithNext } from './logic';
+import { toast } from '@/components/ui/Toast';
 
 const blankSet = (reps: number | null, weightKg: number | null): TemplateSet => ({ id: newId(), type: 'normal', reps, weightKg, durationSec: null, distanceM: null });
 
@@ -61,6 +62,7 @@ export default function TemplateEditorPage() {
     if (t.exercises.length === 0) return setError('Voeg minstens één oefening toe.');
     setSaving(true);
     await saveTemplate({ ...t, name: t.name.trim(), folder: t.folder?.trim() || null, note: t.note?.trim() || null });
+    toast('Template bewaard');
     navigate('/workout');
   };
 
