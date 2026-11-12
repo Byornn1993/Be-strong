@@ -5,7 +5,7 @@ import type { Point } from './charts';
 // Grafieken in de huisstijl: goud op een subtiel raster (--line-2).
 // Niet rechtstreeks importeren: gebruik '@/components/charts' (laadt Recharts pas als er een grafiek getoond wordt).
 
-const axis = { stroke: 'var(--muted)', fontSize: 11, tickLine: false, axisLine: false } as const;
+const axis = { stroke: 'var(--muted)', fontSize: 12, tickLine: false, axisLine: false } as const;
 
 const tooltipStyle = {
   contentStyle: { background: 'var(--surface)', border: '1px solid var(--line)', borderRadius: 12, color: 'var(--fg)', fontSize: 12 },

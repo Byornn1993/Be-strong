@@ -63,7 +63,7 @@ export function FloatingRest(props: Props) {
         <Timer size={16} className="text-accent" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] uppercase tracking-wide text-muted">Rust</p>
+        <p className="text-xs uppercase tracking-wide text-muted">Rust</p>
         <p className="text-xl font-bold tabular-nums leading-tight">{formatClock(restRemainingSec(rest, now))}</p>
       </div>
       <Controls {...props} now={now} />

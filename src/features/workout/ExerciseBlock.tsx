@@ -49,7 +49,7 @@ export const ExerciseBlock = memo(
           {handle}
           <div className="min-w-0 flex-1">
             {supersetLabel && (
-              <p className="flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wide text-accent">
+              <p className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-accent">
                 <Link2 size={12} /> {supersetLabel}
               </p>
             )}
@@ -67,7 +67,7 @@ export const ExerciseBlock = memo(
         </div>
 
         <div
-          className="grid gap-1.5 px-1 pb-1 text-[11px] font-semibold uppercase tracking-wide text-faint"
+          className="grid gap-1.5 px-1 pb-1 text-xs font-semibold uppercase tracking-wide text-faint"
           style={{ gridTemplateColumns: setRowGrid(cols.length) }}
           aria-hidden
         >

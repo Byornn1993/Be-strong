@@ -104,7 +104,7 @@ export default function ExercisesPage() {
                     {counts.get(e.id) ? ` · ${counts.get(e.id)}×` : ''}
                   </span>
                 </span>
-                {e.userId && <span className="rounded-md bg-primary-soft px-2 py-0.5 text-[11px] font-semibold text-accent">Eigen</span>}
+                {e.userId && <span className="rounded-md bg-primary-soft px-2 py-0.5 text-xs font-semibold text-accent">Eigen</span>}
               </Link>
             </li>
           ))}

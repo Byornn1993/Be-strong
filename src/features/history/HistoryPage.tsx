@@ -21,7 +21,7 @@ export function WorkoutCard({ w }: { w: Workout }) {
           <p className="truncate font-semibold">{w.name}</p>
           <p className="text-xs text-muted">{formatDate(w.startedAt)}</p>
         </div>
-        {w.source === 'strong_import' && <span className="rounded-md bg-surface-2 px-2 py-0.5 text-[10px] text-faint">Strong</span>}
+        {w.source === 'strong_import' && <span className="rounded-md bg-surface-2 px-2 py-0.5 text-[11px] text-faint">Strong</span>}
       </div>
       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
         <span className="flex items-center gap-1">
@@ -79,7 +79,7 @@ function Calendar({ workouts }: { workouts: Workout[] }) {
             <ChevronRight />
           </IconButton>
         </div>
-        <div className="grid grid-cols-7 text-center text-[11px] font-semibold text-faint">
+        <div className="grid grid-cols-7 text-center text-xs font-semibold text-faint">
           {['ma', 'di', 'wo', 'do', 'vr', 'za', 'zo'].map((d) => (
             <span key={d} className="py-1">
               {d}
