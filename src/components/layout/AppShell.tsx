@@ -5,8 +5,7 @@ import { Logo } from '@/components/Logo';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { ErrorBoundary, Spinner } from '@/components/ui/States';
 import { ActiveWorkoutBar } from './ActiveWorkoutBar';
-import { SyncIndicator } from './SyncIndicator';
-import { useSyncStatus } from '@/lib/sync/status';
+import { SyncIndicator, useSyncLabel } from './SyncIndicator';
 import { useWorkoutStatus } from '@/features/workout/WorkoutProvider';
 import { ActiveWorkoutSheet } from '@/features/workout/ActiveWorkoutSheet';
 
@@ -67,7 +66,9 @@ function SideItem({ to, label, icon: Icon, primary }: Item) {
 export function AppShell({ children }: { children?: ReactNode }) {
   const { hasActive: active, sheetOpen } = useWorkoutStatus();
   const location = useLocation();
-  const sync = useSyncStatus();
+  // Op gsm is er geen zijbalk: offline, een sync-fout of een conflict tonen we bovenaan in een balk.
+  const sync = useSyncLabel();
+  const syncProblem = sync.tone === 'warn' || sync.tone === 'danger';
 
   return (
     <div className="min-h-dvh desk:flex" style={{ paddingLeft: 'var(--safe-left)', paddingRight: 'var(--safe-right)' }}>
@@ -94,8 +95,8 @@ export function AppShell({ children }: { children?: ReactNode }) {
 
       <div className="min-w-0 flex-1">
         <div className="desk:hidden" style={{ paddingTop: 'var(--safe-top)' }} />
-        {!sync.online && (
-          <div className="flex justify-center border-b border-warn/20 bg-warn/10 desk:hidden">
+        {syncProblem && (
+          <div className={`flex justify-center border-b desk:hidden ${sync.tone === 'danger' ? 'border-danger/20 bg-danger/10' : 'border-warn/20 bg-warn/10'}`}>
             <SyncIndicator />
           </div>
         )}
