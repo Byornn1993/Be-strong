@@ -1,4 +1,4 @@
-import { Suspense, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, type ReactNode } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { Dumbbell, History, Plus, Ruler, Settings, User } from 'lucide-react';
 import { Logo } from '@/components/Logo';
@@ -7,7 +7,11 @@ import { ErrorBoundary, Spinner } from '@/components/ui/States';
 import { ActiveWorkoutBar } from './ActiveWorkoutBar';
 import { SyncIndicator, useSyncLabel } from './SyncIndicator';
 import { useWorkoutStatus } from '@/features/workout/WorkoutProvider';
-import { ActiveWorkoutSheet } from '@/features/workout/ActiveWorkoutSheet';
+
+// Het workoutscherm (met de sleepbibliotheek) zit niet in de opstartbundel: het laadt pas als er een workout
+// loopt. Kort na het opstarten wordt het stilletjes vooraf opgehaald, zodat "Start" meteen opent.
+const loadWorkoutSheet = () => import('@/features/workout/ActiveWorkoutSheet');
+const ActiveWorkoutSheet = lazy(() => loadWorkoutSheet().then((m) => ({ default: m.ActiveWorkoutSheet })));
 
 const NAV = [
   { to: '/profile', label: 'Profiel', icon: User },
@@ -66,6 +70,11 @@ function SideItem({ to, label, icon: Icon, primary }: Item) {
 export function AppShell({ children }: { children?: ReactNode }) {
   const { hasActive: active, sheetOpen } = useWorkoutStatus();
   const location = useLocation();
+
+  useEffect(() => {
+    const t = setTimeout(() => void loadWorkoutSheet(), 2500);
+    return () => clearTimeout(t);
+  }, []);
   // Op gsm is er geen zijbalk: offline, een sync-fout of een conflict tonen we bovenaan in een balk.
   const sync = useSyncLabel();
   const syncProblem = sync.tone === 'warn' || sync.tone === 'danger';
@@ -123,7 +132,11 @@ export function AppShell({ children }: { children?: ReactNode }) {
         ))}
       </nav>
 
-      <ActiveWorkoutSheet />
+      {active && (
+        <Suspense fallback={null}>
+          <ActiveWorkoutSheet />
+        </Suspense>
+      )}
     </div>
   );
 }
