@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Plus } from 'lucide-react';
-import { Line, LineChart, ResponsiveContainer } from 'recharts';
+import { Sparkline } from '@/components/charts';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Sheet } from '@/components/ui/Sheet';
@@ -67,13 +67,7 @@ export default function MeasurePage() {
                     <Delta diff={s.diff} pct={s.diffPct} unit={t.unit} />
                   </div>
                   {series.length > 1 && (
-                    <div className="h-12 w-28" aria-hidden>
-                      <ResponsiveContainer>
-                        <LineChart data={series}>
-                          <Line dataKey="value" stroke="var(--accent)" strokeWidth={2} dot={false} isAnimationActive={false} />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
+                    <Sparkline data={series.map((m) => ({ label: m.measuredAt, value: m.value }))} />
                   )}
                 </div>
               ) : (
