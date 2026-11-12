@@ -27,10 +27,6 @@ export function monthKey(input: string | Date): string {
   return dayKey(input).slice(0, 7);
 }
 
-export function startOfLocalDay(d: Date): Date {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
 /** Maandag 00:00 (lokaal) van de week waarin d valt. */
 export function startOfWeek(d: Date): Date {
   const day = (d.getDay() + 6) % 7; // ma=0 … zo=6

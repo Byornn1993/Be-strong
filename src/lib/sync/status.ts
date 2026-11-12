@@ -22,10 +22,6 @@ export function setSyncStatus(patch: Partial<SyncStatus>): void {
   for (const l of listeners) l();
 }
 
-export function getSyncStatus(): SyncStatus {
-  return state;
-}
-
 export function useSyncStatus(): SyncStatus {
   return useSyncExternalStore(
     (cb) => {

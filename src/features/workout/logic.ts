@@ -78,7 +78,7 @@ export function addSet(w: ActiveWorkout, weId: string): ActiveWorkout {
   return updateExercise(w, weId, (we) => {
     const last = we.sets.at(-1);
     // Nieuwe set neemt de waarden van de vorige over als startpunt (niet afgevinkt).
-    const s = emptySet(last?.type === 'warmup' ? 'normal' : 'normal');
+    const s = emptySet();
     if (last) Object.assign(s, { weightKg: last.weightKg, reps: last.reps, durationSec: last.durationSec, distanceM: last.distanceM });
     return { ...we, sets: [...we.sets, s] };
   });
@@ -129,18 +129,6 @@ export function toggleSupersetWithNext<T extends { id: string; supersetGroup: st
   }
   const group = cur.supersetGroup ?? next.supersetGroup ?? newId().slice(0, 8);
   return list.map((e, k) => (k === i || k === i + 1 ? { ...e, supersetGroup: group } : e));
-}
-
-/** Volgende niet-afgevinkte set na (weId, setId), voor de focus na afvinken. */
-export function nextOpenSet(w: ActiveWorkout, weId: string, setId: string): { weId: string; setId: string } | null {
-  let passed = false;
-  for (const we of w.exercises) {
-    for (const s of we.sets) {
-      if (passed && !s.completed) return { weId: we.id, setId: s.id };
-      if (we.id === weId && s.id === setId) passed = true;
-    }
-  }
-  return null;
 }
 
 export function countSets(w: Pick<ActiveWorkout, 'exercises'>): { done: number; open: number } {

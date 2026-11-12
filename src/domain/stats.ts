@@ -75,10 +75,6 @@ export function byDay(workouts: readonly Workout[]): Map<string, Workout[]> {
   return m;
 }
 
-export function sortByStartDesc(ws: readonly Workout[]): Workout[] {
-  return [...ws].sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
-}
-
 export interface PeriodSummary {
   workouts: number;
   durationSec: number;

@@ -14,7 +14,3 @@ export const supabase: SupabaseClient | null = supabaseConfigured
     })
   : null;
 
-export function requireSupabase(): SupabaseClient {
-  if (!supabase) throw new Error('Supabase is niet geconfigureerd (zie .env.example).');
-  return supabase;
-}
