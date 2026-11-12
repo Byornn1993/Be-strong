@@ -49,7 +49,7 @@ export function SetRow({
         type="button"
         disabled={!previous}
         onClick={() => previous && onChange({ ...previous })}
-        className="min-h-[40px] truncate rounded-lg px-1 text-left text-[13px] text-muted enabled:hover:text-text disabled:text-faint"
+        className="min-h-[44px] truncate rounded-lg px-1 text-left text-[13px] text-muted enabled:hover:text-text disabled:text-faint"
         aria-label={previous ? `Vorige: ${formatSet(type, previous)} overnemen` : 'Geen vorige waarde'}
       >
         {previous ? formatSet(type, previous) : '—'}
@@ -83,7 +83,7 @@ export function SetRow({
         onClick={onToggle}
         aria-pressed={done}
         aria-label={done ? 'Set niet meer afgevinkt' : 'Set afvinken'}
-        className={`tap flex h-10 items-center justify-center rounded-lg transition ${done ? 'anim-pop bg-pos text-bg' : 'border border-line bg-input text-faint hover:border-accent hover:text-text'}`}
+        className={`tap flex h-11 items-center justify-center rounded-lg transition ${done ? 'anim-pop bg-pos text-bg' : 'border border-line bg-input text-faint hover:border-accent hover:text-text'}`}
       >
         <Check size={20} strokeWidth={3} />
       </button>

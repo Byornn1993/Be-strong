@@ -8,6 +8,10 @@ interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, '
   integer?: boolean;
 }
 
+/** Gedeelde stijl van de getalvelden: 44px hoog (duimvriendelijk), gecentreerd. */
+const FIELD =
+  'h-11 w-full rounded-sm2 border border-line bg-input px-2 text-center font-semibold tabular-nums text-text placeholder:font-normal placeholder:text-faint focus:border-accent focus:outline-none';
+
 const parse = (s: string, integer: boolean): number | null => {
   const t = s.replace(',', '.').trim();
   if (t === '') return null;
@@ -47,7 +51,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
         onValue(parse(raw, integer));
       }}
       onFocus={(e) => e.target.select()}
-      className={`h-10 w-full rounded-sm2 border border-line bg-input px-2 text-center font-semibold tabular-nums text-text placeholder:font-normal placeholder:text-faint focus:border-accent focus:outline-none ${className}`}
+      className={`${FIELD} ${className}`}
       {...rest}
     />
   );
@@ -76,7 +80,7 @@ export function DurationInput({ value, onValue, className = '', ...rest }: Omit<
       value={text}
       onChange={(e) => setText(e.target.value)}
       onBlur={(e) => commit(e.target.value)}
-      className={`h-10 w-full rounded-sm2 border border-line bg-input px-2 text-center font-semibold tabular-nums text-text placeholder:font-normal placeholder:text-faint focus:border-accent focus:outline-none ${className}`}
+      className={`${FIELD} ${className}`}
       {...rest}
     />
   );
