@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useId, useRef, useSyncExternalStore, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useId, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { IconButton } from './Button';
@@ -13,6 +13,11 @@ interface SheetProps {
   footer?: ReactNode;
   /** Volledig scherm (actieve workout) i.p.v. een bottom sheet. */
   full?: boolean;
+  /**
+   * Vaste hoogte (bijna schermhoog) i.p.v. meegroeien met de inhoud. Voor vensters met een zoekveld:
+   * anders krimpt het venster tijdens het typen (minder resultaten) en zakt de zoekbalk achter het toetsenbord.
+   */
+  tall?: boolean;
   labelledBy?: string;
 }
 
@@ -48,6 +53,33 @@ export function useOpenSheetCount(): number {
 }
 
 /*
+ * Zichtbaar deel van het scherm. Op iPhone schuift het toetsenbord OVER de pagina (de pagina wordt niet
+ * kleiner), dus een venster onderaan zou erachter verdwijnen. We leggen het venster daarom op het
+ * zichtbare stuk boven het toetsenbord (visualViewport).
+ */
+function useVisibleArea(active: boolean): { top: number; height: number } | null {
+  const [area, setArea] = useState<{ top: number; height: number } | null>(null);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!active || !vv) return;
+    const update = () => {
+      // Alleen bijsturen als er echt iets (toetsenbord) over het scherm ligt; anders gewoon de CSS-layout.
+      const covered = window.innerHeight - vv.height > 80;
+      setArea(covered ? { top: vv.offsetTop, height: vv.height } : null);
+    };
+    update();
+    vv.addEventListener('resize', update);
+    vv.addEventListener('scroll', update);
+    return () => {
+      vv.removeEventListener('resize', update);
+      vv.removeEventListener('scroll', update);
+      setArea(null);
+    };
+  }, [active]);
+  return area;
+}
+
+/*
  * Een sheet die BINNEN een andere sheet opent (bv. Finish in het workoutscherm) ligt altijd erboven.
  * Vroeger hing dat af van de volgorde in de pagina: openden beide tegelijk, dan lag Finish eronder
  * (onzichtbaar) en leek de Finish-knop niet te werken.
@@ -55,7 +87,7 @@ export function useOpenSheetCount(): number {
 const DepthContext = createContext(0);
 
 /** Bottom sheet op mobiel, gecentreerde modal op grotere schermen. Esc en tik op de achtergrond sluiten. */
-export function Sheet({ open, onClose, title, action, children, footer, full }: SheetProps) {
+export function Sheet({ open, onClose, title, action, children, footer, full, tall }: SheetProps) {
   const depth = useContext(DepthContext) + 1;
   const titleId = useId();
   const panel = useRef<HTMLDivElement>(null);
@@ -80,10 +112,16 @@ export function Sheet({ open, onClose, title, action, children, footer, full }: 
     };
   }, [open, depth]);
 
+  const visible = useVisibleArea(open && !full);
+
   if (!open) return null;
 
   return createPortal(
-    <div className={`fixed inset-0 flex ${full ? '' : 'items-end md:items-center'} justify-center`} style={{ zIndex: 50 + depth }} role="presentation">
+    <div
+      className={`fixed inset-0 flex ${full ? '' : 'items-end md:items-center'} justify-center`}
+      style={{ zIndex: 50 + depth, ...(visible && { top: visible.top, height: visible.height, bottom: 'auto' }) }}
+      role="presentation"
+    >
       {!full && <div className="absolute inset-0 bg-[var(--overlay)]" onClick={onClose} aria-hidden />}
       <div
         ref={panel}
@@ -94,9 +132,10 @@ export function Sheet({ open, onClose, title, action, children, footer, full }: 
         className={
           full
             ? 'anim-sheet relative page-bg flex h-full w-full flex-col outline-none'
-            : 'anim-sheet relative flex max-h-[92dvh] w-full flex-col rounded-t-[22px] border border-line-2 bg-surface shadow-pop outline-none md:max-w-lg md:rounded-[22px]'
+            : `anim-sheet relative flex max-h-[92%] w-full flex-col rounded-t-[22px] border border-line-2 bg-surface shadow-pop outline-none md:max-w-lg md:rounded-[22px] ${tall ? 'h-[92%] md:h-[80%]' : ''}`
         }
-        style={full ? { paddingTop: 'var(--safe-top)' } : { paddingBottom: 'var(--safe-bottom)' }}
+        // Met open toetsenbord geen extra ruimte voor de iPhone-thuisbalk (die zit dan onder het toetsenbord).
+        style={full ? { paddingTop: 'var(--safe-top)' } : { paddingBottom: visible ? 0 : 'var(--safe-bottom)' }}
       >
         {(title || action) && (
           <div className="flex items-center gap-2 border-b border-border px-2 py-1.5">

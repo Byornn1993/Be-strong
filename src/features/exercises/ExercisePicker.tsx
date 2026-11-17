@@ -52,6 +52,7 @@ export function ExercisePicker({
       open={open}
       onClose={onClose}
       title={title}
+      tall
       action={
         <Button size="sm" variant="ghost" icon={<Plus size={16} />} onClick={() => setCreating(true)}>
           Nieuw
