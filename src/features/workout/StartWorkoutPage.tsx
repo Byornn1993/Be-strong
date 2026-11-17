@@ -9,13 +9,20 @@ import { useConfirm } from '@/components/ui/ConfirmDialog';
 import { ExerciseAvatar } from '@/components/ExerciseAvatar';
 import { useExerciseMap, useLastPerformed, useTemplates } from '@/lib/db/hooks';
 import { cloneTemplate, deleteTemplate, saveTemplate } from '@/lib/db/repo';
-import type { Template } from '@/lib/db/types';
+import type { ExerciseType, SetValues, Template } from '@/lib/db/types';
 import { formatDate } from '@/domain/dates';
-import { toComma } from '@/domain/format';
-import { MUSCLE_LABELS } from '@/domain/exerciseTypes';
+import { formatSet } from '@/domain/format';
+import { countsWeight, hasValues, MUSCLE_LABELS } from '@/domain/exerciseTypes';
 import { useWorkoutActions } from './WorkoutProvider';
 import { activeFromTemplate, newActiveWorkout } from './logic';
 import { toast } from '@/components/ui/Toast';
+
+/** Doel van een template-oefening, bv. ' · 10 reps', ' · 60 kg × 8' of ' · 30:00 · stand 8'. */
+function targetText(type: ExerciseType, v: SetValues): string {
+  if (!hasValues(type, v)) return '';
+  if (countsWeight(type) && !v.weightKg && v.reps) return ` · ${v.reps} reps`;
+  return ` · ${formatSet(type, v)}`;
+}
 
 export default function StartWorkoutPage() {
   const templates = useTemplates();
@@ -167,8 +174,7 @@ export default function StartWorkoutPage() {
                     </Link>
                     <p className="text-xs text-muted">
                       {ex ? MUSCLE_LABELS[ex.primaryMuscle] : ''}
-                      {te.sets[0]?.reps ? ` · ${te.sets[0].reps} reps` : ''}
-                      {te.sets[0]?.weightKg ? ` · ${toComma(te.sets[0].weightKg)} kg` : ''}
+                      {ex && te.sets[0] ? targetText(ex.type, te.sets[0]) : ''}
                       {te.supersetGroup ? ' · superset' : ''}
                     </p>
                   </div>

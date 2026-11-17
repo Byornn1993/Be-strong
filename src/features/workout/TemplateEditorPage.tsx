@@ -3,25 +3,42 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Link2, Minus, Plus, Trash2 } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Button, IconButton } from '@/components/ui/Button';
-import { NumberInput } from '@/components/ui/NumberInput';
+import { DurationInput, NumberInput } from '@/components/ui/NumberInput';
 import { EmptyState, Spinner } from '@/components/ui/States';
 import { SortableList } from '@/components/SortableList';
 import { ExercisePicker } from '@/features/exercises/ExercisePicker';
 import { useExerciseMap, useTemplate, useTemplates } from '@/lib/db/hooks';
 import { saveTemplate } from '@/lib/db/repo';
-import type { Exercise, Template, TemplateExercise, TemplateSet } from '@/lib/db/types';
+import type { Exercise, ExerciseType, SetValues, Template, TemplateExercise, TemplateSet } from '@/lib/db/types';
+import { columnsFor, durationInMinutes } from '@/domain/exerciseTypes';
 import { newId } from '@/lib/ids';
 import { reorderExercises, toggleSupersetWithNext } from './logic';
 import { toast } from '@/components/ui/Toast';
 
-const blankSet = (reps: number | null, weightKg: number | null): TemplateSet => ({ id: newId(), type: 'normal', reps, weightKg, durationSec: null, distanceM: null });
+const blankSet = (v: Partial<SetValues> = {}): TemplateSet => ({
+  id: newId(),
+  type: 'normal',
+  reps: v.reps ?? null,
+  weightKg: v.weightKg ?? null,
+  durationSec: v.durationSec ?? null,
+  distanceM: v.distanceM ?? null,
+});
+
+/** Nieuwe oefening: 3 sets; bij oefeningen met reps alvast 10 reps als doel. */
+const startSets = (type: ExerciseType | undefined): TemplateSet[] => {
+  const hasReps = !!type && columnsFor(type).some((c) => c.field === 'reps' && c.label === 'Reps');
+  return [0, 1, 2].map(() => blankSet({ reps: hasReps ? 10 : null }));
+};
 
 function setCount(te: TemplateExercise, n: number): TemplateExercise {
   const first = te.sets[0];
   const sets = te.sets.slice(0, n);
-  while (sets.length < n) sets.push(blankSet(first?.reps ?? null, first?.weightKg ?? null));
+  while (sets.length < n) sets.push(blankSet(first ?? {}));
   return { ...te, sets };
 }
+
+/** Kolomnaam in de template: bij gewicht gaat het om een doel. */
+const targetLabel = (label: string) => (label === 'kg' ? 'Doel kg' : label === 'm' ? 'Afstand (m)' : label);
 
 export default function TemplateEditorPage() {
   const { id } = useParams();
@@ -53,7 +70,7 @@ export default function TemplateEditorPage() {
       ...t,
       exercises: [
         ...t.exercises,
-        ...list.map((ex): TemplateExercise => ({ id: newId(), exerciseId: ex.id, supersetGroup: null, restSec: null, note: null, sets: [0, 1, 2].map(() => blankSet(10, null)) })),
+        ...list.map((ex): TemplateExercise => ({ id: newId(), exerciseId: ex.id, supersetGroup: null, restSec: null, note: null, sets: startSets(ex.type) })),
       ],
     });
 
@@ -128,14 +145,20 @@ export default function TemplateEditorPage() {
                         </IconButton>
                       </div>
                     </div>
-                    <label>
-                      <span className="label">Reps</span>
-                      <NumberInput integer className="mt-1" value={te.sets[0]?.reps ?? null} onValue={(v) => patchEx(te.id, (x) => ({ ...x, sets: x.sets.map((s) => ({ ...s, reps: v })) }))} placeholder="—" />
-                    </label>
-                    <label>
-                      <span className="label">Doel kg</span>
-                      <NumberInput className="mt-1" value={te.sets[0]?.weightKg ?? null} onValue={(v) => patchEx(te.id, (x) => ({ ...x, sets: x.sets.map((s) => ({ ...s, weightKg: v })) }))} placeholder="—" />
-                    </label>
+                    {/* Zelfde kolommen als in de workout: bv. Reps + Doel kg, of Tijd + Stand bij cardio. */}
+                    {(ex ? columnsFor(ex.type) : []).map((c) => {
+                      const setAll = (v: number | null) => patchEx(te.id, (x) => ({ ...x, sets: x.sets.map((s) => ({ ...s, [c.field]: v })) }));
+                      return (
+                        <label key={c.field}>
+                          <span className="label">{targetLabel(c.label)}</span>
+                          {c.field === 'durationSec' ? (
+                            <DurationInput className="mt-1" minutes={durationInMinutes(ex!.type)} value={te.sets[0]?.durationSec ?? null} onValue={setAll} placeholder="—" />
+                          ) : (
+                            <NumberInput className="mt-1" integer={c.field === 'reps'} max={c.max} value={te.sets[0]?.[c.field] ?? null} onValue={setAll} placeholder="—" />
+                          )}
+                        </label>
+                      );
+                    })}
                     <label>
                       <span className="label">Rust (s)</span>
                       <NumberInput integer className="mt-1" value={te.restSec} onValue={(v) => patchEx(te.id, (x) => ({ ...x, restSec: v === null ? null : Math.min(1800, v) }))} placeholder="std" />
