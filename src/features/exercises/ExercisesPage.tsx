@@ -6,16 +6,16 @@ import { Button } from '@/components/ui/Button';
 import { EmptyState, Spinner } from '@/components/ui/States';
 import { ExerciseAvatar } from '@/components/ExerciseAvatar';
 import { useExercises, useWorkouts } from '@/lib/db/hooks';
-import { EQUIPMENT, EXERCISE_TYPES, MUSCLES, type Equipment, type ExerciseType, type Muscle } from '@/lib/db/types';
+import { EQUIPMENT, EXERCISE_TYPES, MUSCLES, type Equipment, type ExerciseType } from '@/lib/db/types';
 import { EQUIPMENT_LABELS, MUSCLE_LABELS, TYPE_LABELS } from '@/domain/exerciseTypes';
 import { ExerciseForm } from './ExerciseForm';
-import { filterExercises } from './ExercisePicker';
+import { filterExercises, type MuscleFilter } from '@/domain/exerciseSearch';
 
 export default function ExercisesPage() {
   const all = useExercises();
   const workouts = useWorkouts();
   const [q, setQ] = useState('');
-  const [muscle, setMuscle] = useState<Muscle | null>(null);
+  const [muscle, setMuscle] = useState<MuscleFilter | null>(null);
   const [equipment, setEquipment] = useState<Equipment | ''>('');
   const [type, setType] = useState<ExerciseType | ''>('');
   const [own, setOwn] = useState<'all' | 'own' | 'std'>('all');
@@ -55,6 +55,9 @@ export default function ExercisesPage() {
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap desk:px-0">
           <Chip active={!muscle} onClick={() => setMuscle(null)}>
             Alle spiergroepen
+          </Chip>
+          <Chip active={muscle === 'cardio'} onClick={() => setMuscle(muscle === 'cardio' ? null : 'cardio')}>
+            Cardio
           </Chip>
           {MUSCLES.map((m) => (
             <Chip key={m} active={muscle === m} onClick={() => setMuscle(muscle === m ? null : m)}>

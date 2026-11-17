@@ -377,7 +377,12 @@ values
   ('a97ace8a-9adb-58f1-832d-92f9af87072d', null, 'Cycling (Indoor)', 'full_body', array['legs']::text[], 'machine', 'distance_duration'),
   ('b7a40928-281e-5d2a-8a36-e0842cdd328b', null, 'Rowing (Machine)', 'full_body', array['back', 'legs']::text[], 'machine', 'distance_duration'),
   ('254eff21-c315-5457-a8e1-2a203beca84a', null, 'Walking', 'full_body', array['legs']::text[], 'other', 'distance_duration'),
-  ('54b8969c-f5fe-50b3-836f-6c0591552246', null, 'Jump Rope', 'full_body', array['calves']::text[], 'other', 'duration')
+  ('54b8969c-f5fe-50b3-836f-6c0591552246', null, 'Jump Rope', 'full_body', array['calves']::text[], 'other', 'duration'),
+  ('3a53be51-7a07-562e-ab46-7181f7dd1a70', null, 'Running', 'full_body', array['legs']::text[], 'other', 'distance_duration'),
+  ('81afcc18-c21d-511b-81f4-00da02a06ecb', null, 'Cycling', 'full_body', array['legs']::text[], 'other', 'distance_duration'),
+  ('2b304c44-86c3-5c61-9e65-e70d9e05dbc7', null, 'Walking (Treadmill)', 'full_body', array['legs']::text[], 'machine', 'distance_duration'),
+  ('a273c0d8-7733-5fb2-aba8-86c74fcb7cb8', null, 'Stair Climber (Machine)', 'full_body', array['legs', 'glutes']::text[], 'machine', 'duration'),
+  ('725ae8cb-9f8b-5ad5-8167-1775c99003b1', null, 'Elliptical Trainer', 'full_body', array['legs']::text[], 'machine', 'distance_duration')
 on conflict (id) do update set
   name = excluded.name,
   primary_muscle = excluded.primary_muscle,
@@ -776,3 +781,18 @@ insert into public.measurement_types (id, user_id, key, name, unit, kind, sort_o
   ('6f1c2a10-0000-4000-8000-000000000008', null, 'hip',         'Heup',            'cm', 'length',  8)
 on conflict (id) do update set key = excluded.key, name = excluded.name, unit = excluded.unit,
   kind = excluded.kind, sort_order = excluded.sort_order;
+
+
+-- ════════ 20261117000100_cardio_exercises.sql ════════
+-- Extra cardio-standaardoefeningen (buiten lopen/fietsen, wandelen op de loopband, trap, crosstrainer).
+-- Voegt alleen NIEUWE rijen toe aan public.exercises (user_id null = standaard, voor iedereen leesbaar).
+-- Wijzigt geen schema en raakt geen bestaande gegevens. Veilig om opnieuw uit te voeren (on conflict do nothing).
+-- Dezelfde rijen staan ook in 20261023000200_standard_exercises.sql (voor een nieuwe installatie).
+insert into public.exercises (id, user_id, name, primary_muscle, secondary_muscles, equipment, type)
+values
+  ('3a53be51-7a07-562e-ab46-7181f7dd1a70', null, 'Running', 'full_body', array['legs']::text[], 'other', 'distance_duration'),
+  ('81afcc18-c21d-511b-81f4-00da02a06ecb', null, 'Cycling', 'full_body', array['legs']::text[], 'other', 'distance_duration'),
+  ('2b304c44-86c3-5c61-9e65-e70d9e05dbc7', null, 'Walking (Treadmill)', 'full_body', array['legs']::text[], 'machine', 'distance_duration'),
+  ('a273c0d8-7733-5fb2-aba8-86c74fcb7cb8', null, 'Stair Climber (Machine)', 'full_body', array['legs', 'glutes']::text[], 'machine', 'duration'),
+  ('725ae8cb-9f8b-5ad5-8167-1775c99003b1', null, 'Elliptical Trainer', 'full_body', array['legs']::text[], 'machine', 'distance_duration')
+on conflict (id) do nothing;

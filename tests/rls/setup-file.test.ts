@@ -10,7 +10,7 @@ it('supabase/setup-productie.sql installeert de volledige database in één keer
   const ex = await db.query<{ n: number }>('select count(*)::int as n from public.exercises where user_id is null');
   const mt = await db.query<{ n: number }>('select count(*)::int as n from public.measurement_types');
   const rls = await db.query<{ n: number }>(`select count(*)::int as n from pg_tables where schemaname = 'public' and rowsecurity`);
-  expect(ex.rows[0]!.n).toBe(111);
+  expect(ex.rows[0]!.n).toBe(116); // 111 + 5 cardio (2026-11-17)
   expect(mt.rows[0]!.n).toBe(8);
   expect(rls.rows[0]!.n).toBe(13);
 });

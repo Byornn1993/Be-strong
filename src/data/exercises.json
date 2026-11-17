@@ -1028,5 +1028,56 @@
     ],
     "equipment": "other",
     "type": "duration"
+  },
+  {
+    "id": "3a53be51-7a07-562e-ab46-7181f7dd1a70",
+    "name": "Running",
+    "primaryMuscle": "full_body",
+    "secondaryMuscles": [
+      "legs"
+    ],
+    "equipment": "other",
+    "type": "distance_duration"
+  },
+  {
+    "id": "81afcc18-c21d-511b-81f4-00da02a06ecb",
+    "name": "Cycling",
+    "primaryMuscle": "full_body",
+    "secondaryMuscles": [
+      "legs"
+    ],
+    "equipment": "other",
+    "type": "distance_duration"
+  },
+  {
+    "id": "2b304c44-86c3-5c61-9e65-e70d9e05dbc7",
+    "name": "Walking (Treadmill)",
+    "primaryMuscle": "full_body",
+    "secondaryMuscles": [
+      "legs"
+    ],
+    "equipment": "machine",
+    "type": "distance_duration"
+  },
+  {
+    "id": "a273c0d8-7733-5fb2-aba8-86c74fcb7cb8",
+    "name": "Stair Climber (Machine)",
+    "primaryMuscle": "full_body",
+    "secondaryMuscles": [
+      "legs",
+      "glutes"
+    ],
+    "equipment": "machine",
+    "type": "duration"
+  },
+  {
+    "id": "725ae8cb-9f8b-5ad5-8167-1775c99003b1",
+    "name": "Elliptical Trainer",
+    "primaryMuscle": "full_body",
+    "secondaryMuscles": [
+      "legs"
+    ],
+    "equipment": "machine",
+    "type": "distance_duration"
   }
 ]

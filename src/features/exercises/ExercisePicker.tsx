@@ -6,18 +6,10 @@ import { Chip } from '@/components/ui/PageHeader';
 import { ExerciseAvatar } from '@/components/ExerciseAvatar';
 import { Spinner } from '@/components/ui/States';
 import { useExercises } from '@/lib/db/hooks';
-import { MUSCLES, type Exercise, type Muscle } from '@/lib/db/types';
-import { MUSCLE_LABELS, EQUIPMENT_LABELS } from '@/domain/exerciseTypes';
+import { MUSCLES, type Exercise } from '@/lib/db/types';
+import { filterExercises, type MuscleFilter } from '@/domain/exerciseSearch';
+import { MUSCLE_LABELS } from '@/domain/exerciseTypes';
 import { ExerciseForm } from './ExerciseForm';
-
-export function filterExercises(list: readonly Exercise[], q: string, muscle: Muscle | null): Exercise[] {
-  const terms = q.toLowerCase().trim().split(/\s+/).filter(Boolean);
-  return list.filter(
-    (e) =>
-      (!muscle || e.primaryMuscle === muscle || e.secondaryMuscles.includes(muscle)) &&
-      terms.every((t) => e.name.toLowerCase().includes(t) || EQUIPMENT_LABELS[e.equipment].toLowerCase().includes(t)),
-  );
-}
 
 /** Zoeken in de bibliotheek en één of meer oefeningen kiezen. */
 export function ExercisePicker({
@@ -35,7 +27,7 @@ export function ExercisePicker({
 }) {
   const all = useExercises();
   const [q, setQ] = useState('');
-  const [muscle, setMuscle] = useState<Muscle | null>(null);
+  const [muscle, setMuscle] = useState<MuscleFilter | null>(null);
   const [selected, setSelected] = useState<string[]>([]);
   const [creating, setCreating] = useState(false);
 
@@ -81,6 +73,9 @@ export function ExercisePicker({
         <div className="-mx-3 flex gap-2 overflow-x-auto px-3 pb-1">
           <Chip active={!muscle} onClick={() => setMuscle(null)}>
             Alles
+          </Chip>
+          <Chip active={muscle === 'cardio'} onClick={() => setMuscle(muscle === 'cardio' ? null : 'cardio')}>
+            Cardio
           </Chip>
           {MUSCLES.map((m) => (
             <Chip key={m} active={muscle === m} onClick={() => setMuscle(muscle === m ? null : m)}>

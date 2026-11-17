@@ -135,4 +135,10 @@ export const LIBRARY = [
   ['Rowing (Machine)', 'full_body', ['back', 'legs'], 'machine', 'distance_duration'],
   ['Walking', 'full_body', ['legs'], 'other', 'distance_duration'],
   ['Jump Rope', 'full_body', ['calves'], 'other', 'duration'],
+  // Toegevoegd 2026-11-17 (migratie 20261117000100_cardio_exercises.sql)
+  ['Running', 'full_body', ['legs'], 'other', 'distance_duration'],
+  ['Cycling', 'full_body', ['legs'], 'other', 'distance_duration'],
+  ['Walking (Treadmill)', 'full_body', ['legs'], 'machine', 'distance_duration'],
+  ['Stair Climber (Machine)', 'full_body', ['legs', 'glutes'], 'machine', 'duration'],
+  ['Elliptical Trainer', 'full_body', ['legs'], 'machine', 'distance_duration'],
 ];
