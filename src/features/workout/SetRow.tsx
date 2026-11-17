@@ -1,6 +1,6 @@
 import { Check } from 'lucide-react';
 import type { ExerciseType, SetValues, WorkoutSet } from '@/lib/db/types';
-import { columnsFor, setBadge } from '@/domain/exerciseTypes';
+import { columnsFor, durationInMinutes, setBadge } from '@/domain/exerciseTypes';
 import { formatSet, toComma } from '@/domain/format';
 import { DurationInput, NumberInput } from '@/components/ui/NumberInput';
 
@@ -61,6 +61,7 @@ export function SetRow({
             id={i === 0 ? setInputId(set.id) : undefined}
             aria-label={c.label}
             value={set.durationSec}
+            minutes={durationInMinutes(type)}
             placeholder={previous?.durationSec ? `${Math.floor(previous.durationSec / 60)}:${String(previous.durationSec % 60).padStart(2, '0')}` : '0:00'}
             onValue={(v) => onChange({ durationSec: v })}
             className={done ? 'bg-transparent' : ''}
@@ -71,6 +72,7 @@ export function SetRow({
             id={i === 0 ? setInputId(set.id) : undefined}
             aria-label={c.label}
             integer={c.field === 'reps'}
+            max={c.max}
             value={set[c.field]}
             placeholder={previous?.[c.field] != null ? toComma(previous[c.field]!) : '0'}
             onValue={(v) => onChange({ [c.field]: v })}

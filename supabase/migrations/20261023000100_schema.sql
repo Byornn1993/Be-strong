@@ -63,7 +63,7 @@ create table public.exercises (
   equipment text not null check (equipment in
     ('barbell','dumbbell','cable','machine','bodyweight','kettlebell','plate_loaded','other')),
   type text not null check (type in
-    ('weight_reps','bodyweight_reps','weighted_bodyweight','assisted_bodyweight','duration','distance_duration','weight_distance')),
+    ('weight_reps','bodyweight_reps','weighted_bodyweight','assisted_bodyweight','duration','distance_duration','weight_distance','duration_level')),
   instructions text check (char_length(instructions) <= 4000),
   image_path text check (char_length(image_path) <= 500),
   notes text check (char_length(notes) <= 4000),
@@ -156,7 +156,7 @@ create table public.workout_exercises (
   exercise_id uuid references public.exercises (id) on delete set null,
   exercise_name text not null check (char_length(exercise_name) between 1 and 120), -- snapshot
   exercise_type text not null check (exercise_type in
-    ('weight_reps','bodyweight_reps','weighted_bodyweight','assisted_bodyweight','duration','distance_duration','weight_distance')), -- snapshot
+    ('weight_reps','bodyweight_reps','weighted_bodyweight','assisted_bodyweight','duration','distance_duration','weight_distance','duration_level')), -- snapshot
   position integer not null check (position >= 0),
   superset_group text check (char_length(superset_group) <= 40),
   rest_sec integer check (rest_sec between 0 and 1800),

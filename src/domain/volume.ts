@@ -32,6 +32,7 @@ export function bestSet(we: WorkoutExercise): WorkoutSet | null {
     if (we.exerciseType === 'assisted_bodyweight') return (s.reps ?? 0) * 10000 - (s.weightKg ?? 0);
     if (we.exerciseType === 'duration') return s.durationSec ?? 0;
     if (we.exerciseType === 'distance_duration') return (s.distanceM ?? 0) * 100000 + (s.durationSec ?? 0);
+    if (we.exerciseType === 'duration_level') return (s.durationSec ?? 0) * 100 + (s.reps ?? 0);
     return s.reps ?? 0;
   };
   return done.reduce((a, b) => (score(b) > score(a) ? b : a));

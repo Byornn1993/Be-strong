@@ -9,7 +9,7 @@ import type { ExerciseType, Workout, WorkoutSet } from '@/lib/db/types';
 //  * estimated1RM     — Epley: gewicht × (1 + reps/30), enkel voor sets van 1–12 reps. Dit is een SCHATTING.
 //  * bestSetVolume    — grootste gewicht × reps in één set.
 //  * bestSessionVolume— grootste som van gewicht × reps voor deze oefening binnen één workout.
-//  * longestDuration  — langste tijd (duration / distance_duration).
+//  * longestDuration  — langste tijd (duration / distance_duration / duration_level).
 //  * longestDistance  — langste afstand (distance_duration / weight_distance).
 // Een "nieuw PR" bij Finish = strikt beter dan alles wat er vóór deze workout bestond, én er bestond al
 // een eerdere waarde (de allereerste keer is een nulmeting, geen record).
@@ -97,7 +97,7 @@ function recordsFromSets(type: ExerciseType, sets: WorkoutSet[]): ExerciseRecord
       r.bestSetVolume = max(r.bestSetVolume, w * reps);
       session += w * reps;
     }
-    if ((type === 'duration' || type === 'distance_duration') && (s.durationSec ?? 0) > 0)
+    if ((type === 'duration' || type === 'distance_duration' || type === 'duration_level') && (s.durationSec ?? 0) > 0)
       r.longestDuration = max(r.longestDuration, s.durationSec);
     if ((type === 'distance_duration' || type === 'weight_distance') && (s.distanceM ?? 0) > 0)
       r.longestDistance = max(r.longestDistance, s.distanceM);

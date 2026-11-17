@@ -58,6 +58,12 @@ export function formatSet(type: ExerciseType, v: SetValues): string {
     }
     case 'weight_distance':
       return `${formatNumber(w ?? 0)} kg · ${formatDistance(v.distanceM ?? 0)}`;
+    case 'duration_level': {
+      const parts = [];
+      if (v.durationSec) parts.push(formatClock(v.durationSec));
+      if (r != null) parts.push(`stand ${r}`);
+      return parts.join(' · ') || '—';
+    }
   }
 }
 

@@ -67,7 +67,7 @@ create table public.exercises (
   equipment text not null check (equipment in
     ('barbell','dumbbell','cable','machine','bodyweight','kettlebell','plate_loaded','other')),
   type text not null check (type in
-    ('weight_reps','bodyweight_reps','weighted_bodyweight','assisted_bodyweight','duration','distance_duration','weight_distance')),
+    ('weight_reps','bodyweight_reps','weighted_bodyweight','assisted_bodyweight','duration','distance_duration','weight_distance','duration_level')),
   instructions text check (char_length(instructions) <= 4000),
   image_path text check (char_length(image_path) <= 500),
   notes text check (char_length(notes) <= 4000),
@@ -160,7 +160,7 @@ create table public.workout_exercises (
   exercise_id uuid references public.exercises (id) on delete set null,
   exercise_name text not null check (char_length(exercise_name) between 1 and 120), -- snapshot
   exercise_type text not null check (exercise_type in
-    ('weight_reps','bodyweight_reps','weighted_bodyweight','assisted_bodyweight','duration','distance_duration','weight_distance')), -- snapshot
+    ('weight_reps','bodyweight_reps','weighted_bodyweight','assisted_bodyweight','duration','distance_duration','weight_distance','duration_level')), -- snapshot
   position integer not null check (position >= 0),
   superset_group text check (char_length(superset_group) <= 40),
   rest_sec integer check (rest_sec between 0 and 1800),
@@ -373,16 +373,16 @@ values
   ('40e503f4-49a8-56d7-9c07-0560cff918da', null, 'Kettlebell Swing', 'full_body', array['glutes', 'legs']::text[], 'kettlebell', 'weight_reps'),
   ('6011e3a8-75cb-5be1-a645-9fa360eef7ee', null, 'Burpee', 'full_body', '{}'::text[], 'bodyweight', 'bodyweight_reps'),
   ('b265870b-f3eb-5421-a1db-e074636b3851', null, 'Farmers Walk', 'full_body', array['core']::text[], 'dumbbell', 'weight_distance'),
-  ('c21ce5ec-d88f-5f24-986f-fca542fe3016', null, 'Running (Treadmill)', 'full_body', array['legs']::text[], 'machine', 'distance_duration'),
-  ('a97ace8a-9adb-58f1-832d-92f9af87072d', null, 'Cycling (Indoor)', 'full_body', array['legs']::text[], 'machine', 'distance_duration'),
+  ('c21ce5ec-d88f-5f24-986f-fca542fe3016', null, 'Running (Treadmill)', 'full_body', array['legs']::text[], 'machine', 'duration_level'),
+  ('a97ace8a-9adb-58f1-832d-92f9af87072d', null, 'Cycling (Indoor)', 'full_body', array['legs']::text[], 'machine', 'duration_level'),
   ('b7a40928-281e-5d2a-8a36-e0842cdd328b', null, 'Rowing (Machine)', 'full_body', array['back', 'legs']::text[], 'machine', 'distance_duration'),
-  ('254eff21-c315-5457-a8e1-2a203beca84a', null, 'Walking', 'full_body', array['legs']::text[], 'other', 'distance_duration'),
+  ('254eff21-c315-5457-a8e1-2a203beca84a', null, 'Walking', 'full_body', array['legs']::text[], 'other', 'duration_level'),
   ('54b8969c-f5fe-50b3-836f-6c0591552246', null, 'Jump Rope', 'full_body', array['calves']::text[], 'other', 'duration'),
-  ('3a53be51-7a07-562e-ab46-7181f7dd1a70', null, 'Running', 'full_body', array['legs']::text[], 'other', 'distance_duration'),
-  ('81afcc18-c21d-511b-81f4-00da02a06ecb', null, 'Cycling', 'full_body', array['legs']::text[], 'other', 'distance_duration'),
-  ('2b304c44-86c3-5c61-9e65-e70d9e05dbc7', null, 'Walking (Treadmill)', 'full_body', array['legs']::text[], 'machine', 'distance_duration'),
-  ('a273c0d8-7733-5fb2-aba8-86c74fcb7cb8', null, 'Stair Climber (Machine)', 'full_body', array['legs', 'glutes']::text[], 'machine', 'duration'),
-  ('725ae8cb-9f8b-5ad5-8167-1775c99003b1', null, 'Elliptical Trainer', 'full_body', array['legs']::text[], 'machine', 'distance_duration')
+  ('3a53be51-7a07-562e-ab46-7181f7dd1a70', null, 'Running', 'full_body', array['legs']::text[], 'other', 'duration_level'),
+  ('81afcc18-c21d-511b-81f4-00da02a06ecb', null, 'Cycling', 'full_body', array['legs']::text[], 'other', 'duration_level'),
+  ('2b304c44-86c3-5c61-9e65-e70d9e05dbc7', null, 'Walking (Treadmill)', 'full_body', array['legs']::text[], 'machine', 'duration_level'),
+  ('a273c0d8-7733-5fb2-aba8-86c74fcb7cb8', null, 'Stair Climber (Machine)', 'full_body', array['legs', 'glutes']::text[], 'machine', 'duration_level'),
+  ('725ae8cb-9f8b-5ad5-8167-1775c99003b1', null, 'Elliptical Trainer', 'full_body', array['legs']::text[], 'machine', 'duration_level')
 on conflict (id) do update set
   name = excluded.name,
   primary_muscle = excluded.primary_muscle,
@@ -796,3 +796,59 @@ values
   ('a273c0d8-7733-5fb2-aba8-86c74fcb7cb8', null, 'Stair Climber (Machine)', 'full_body', array['legs', 'glutes']::text[], 'machine', 'duration'),
   ('725ae8cb-9f8b-5ad5-8167-1775c99003b1', null, 'Elliptical Trainer', 'full_body', array['legs']::text[], 'machine', 'distance_duration')
 on conflict (id) do nothing;
+
+
+-- ════════ 20261117000200_cardio_tijd_stand.sql ════════
+-- Cardio: nieuw oefeningtype 'duration_level' (Tijd + stand 0–20) en 8 cardio-standaardoefeningen omzetten.
+--
+-- Wat dit doet:
+--  1. De lijst met toegelaten oefeningtypes uitbreiden met 'duration_level' (op exercises en op de
+--     snapshot in workout_exercises). Geen nieuwe kolommen: de stand wordt bewaard in workout_sets.reps.
+--  2. Deze standaardoefeningen (user_id null) krijgen type 'duration_level':
+--       Running (Treadmill)
+--       Cycling (Indoor)
+--       Walking
+--       Running
+--       Cycling
+--       Walking (Treadmill)
+--       Stair Climber (Machine)
+--       Elliptical Trainer
+--     Rowing (Machine) blijft 'distance_duration' (afstand + tijd).
+--
+-- Wat dit NIET doet: bestaande workouts en sets blijven ongewijzigd (elke workout bewaart het type van
+-- toen als snapshot). Eigen oefeningen worden niet aangeraakt. Veilig om opnieuw uit te voeren.
+
+do $$
+declare c record;
+begin
+  for c in
+    select conrelid::regclass as tbl, conname
+    from pg_constraint
+    where contype = 'c'
+      and conrelid in ('public.exercises'::regclass, 'public.workout_exercises'::regclass)
+      and pg_get_constraintdef(oid) like '%distance_duration%'
+  loop
+    execute format('alter table %s drop constraint %I', c.tbl, c.conname);
+  end loop;
+end
+$$;
+
+alter table public.exercises add constraint exercises_type_check check (type in
+  ('weight_reps','bodyweight_reps','weighted_bodyweight','assisted_bodyweight','duration','distance_duration','weight_distance','duration_level'));
+alter table public.workout_exercises add constraint workout_exercises_exercise_type_check check (exercise_type in
+  ('weight_reps','bodyweight_reps','weighted_bodyweight','assisted_bodyweight','duration','distance_duration','weight_distance','duration_level'));
+
+update public.exercises
+set type = 'duration_level'
+where user_id is null
+  and type <> 'duration_level'
+  and id in (
+    'c21ce5ec-d88f-5f24-986f-fca542fe3016',
+    'a97ace8a-9adb-58f1-832d-92f9af87072d',
+    '254eff21-c315-5457-a8e1-2a203beca84a',
+    '3a53be51-7a07-562e-ab46-7181f7dd1a70',
+    '81afcc18-c21d-511b-81f4-00da02a06ecb',
+    '2b304c44-86c3-5c61-9e65-e70d9e05dbc7',
+    'a273c0d8-7733-5fb2-aba8-86c74fcb7cb8',
+    '725ae8cb-9f8b-5ad5-8167-1775c99003b1'
+  );

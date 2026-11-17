@@ -986,7 +986,7 @@
       "legs"
     ],
     "equipment": "machine",
-    "type": "distance_duration"
+    "type": "duration_level"
   },
   {
     "id": "a97ace8a-9adb-58f1-832d-92f9af87072d",
@@ -996,7 +996,7 @@
       "legs"
     ],
     "equipment": "machine",
-    "type": "distance_duration"
+    "type": "duration_level"
   },
   {
     "id": "b7a40928-281e-5d2a-8a36-e0842cdd328b",
@@ -1017,7 +1017,7 @@
       "legs"
     ],
     "equipment": "other",
-    "type": "distance_duration"
+    "type": "duration_level"
   },
   {
     "id": "54b8969c-f5fe-50b3-836f-6c0591552246",
@@ -1037,7 +1037,7 @@
       "legs"
     ],
     "equipment": "other",
-    "type": "distance_duration"
+    "type": "duration_level"
   },
   {
     "id": "81afcc18-c21d-511b-81f4-00da02a06ecb",
@@ -1047,7 +1047,7 @@
       "legs"
     ],
     "equipment": "other",
-    "type": "distance_duration"
+    "type": "duration_level"
   },
   {
     "id": "2b304c44-86c3-5c61-9e65-e70d9e05dbc7",
@@ -1057,7 +1057,7 @@
       "legs"
     ],
     "equipment": "machine",
-    "type": "distance_duration"
+    "type": "duration_level"
   },
   {
     "id": "a273c0d8-7733-5fb2-aba8-86c74fcb7cb8",
@@ -1068,7 +1068,7 @@
       "glutes"
     ],
     "equipment": "machine",
-    "type": "duration"
+    "type": "duration_level"
   },
   {
     "id": "725ae8cb-9f8b-5ad5-8167-1775c99003b1",
@@ -1078,6 +1078,6 @@
       "legs"
     ],
     "equipment": "machine",
-    "type": "distance_duration"
+    "type": "duration_level"
   }
 ]

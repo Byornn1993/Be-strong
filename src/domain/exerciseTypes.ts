@@ -5,7 +5,16 @@ export type SetField = 'weightKg' | 'reps' | 'durationSec' | 'distanceM';
 export interface ColumnDef {
   field: SetField;
   label: string;
+  /** Hoogste toegelaten waarde (bv. stand 20). */
+  max?: number;
 }
+
+/** Bij cardio typ je de tijd in minuten ("30" = 30:00); bij bv. een plank in seconden. */
+export function durationInMinutes(type: ExerciseType): boolean {
+  return type === 'distance_duration' || type === 'duration_level';
+}
+
+export const MAX_LEVEL = 20;
 
 /** Welke kolommen een set van dit type registreert (in de volgorde van de tabel). */
 export function columnsFor(type: ExerciseType): ColumnDef[] {
@@ -24,6 +33,8 @@ export function columnsFor(type: ExerciseType): ColumnDef[] {
       return [{ field: 'distanceM', label: 'm' }, { field: 'durationSec', label: 'Tijd' }];
     case 'weight_distance':
       return [{ field: 'weightKg', label: 'kg' }, { field: 'distanceM', label: 'm' }];
+    case 'duration_level':
+      return [{ field: 'durationSec', label: 'Tijd' }, { field: 'reps', label: 'Stand', max: MAX_LEVEL }];
   }
 }
 
@@ -69,6 +80,7 @@ export const TYPE_LABELS: Record<ExerciseType, string> = {
   duration: 'Tijd',
   distance_duration: 'Afstand + tijd',
   weight_distance: 'Gewicht + afstand',
+  duration_level: 'Tijd + stand',
 };
 
 export const SET_TYPE_LABELS: Record<SetType, string> = {

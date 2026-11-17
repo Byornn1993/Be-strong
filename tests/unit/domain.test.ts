@@ -177,3 +177,18 @@ describe('weergave', () => {
     expect(formatSet('distance_duration', { weightKg: null, reps: null, durationSec: 960, distanceM: 1300 })).toBe('1,3 km · 16:00');
   });
 });
+
+describe('cardio: tijd + stand', () => {
+  it('toont tijd en stand, kolommen Tijd en Stand (max 20)', async () => {
+    const { columnsFor, durationInMinutes } = await import('@/domain/exerciseTypes');
+    expect(formatSet('duration_level', { weightKg: null, reps: 8, durationSec: 1800, distanceM: null })).toBe('30:00 · stand 8');
+    expect(formatSet('duration_level', { weightKg: null, reps: null, durationSec: 600, distanceM: null })).toBe('10:00');
+    expect(columnsFor('duration_level')).toEqual([
+      { field: 'durationSec', label: 'Tijd' },
+      { field: 'reps', label: 'Stand', max: 20 },
+    ]);
+    expect(durationInMinutes('duration_level')).toBe(true);
+    expect(durationInMinutes('distance_duration')).toBe(true);
+    expect(durationInMinutes('duration')).toBe(false);
+  });
+});

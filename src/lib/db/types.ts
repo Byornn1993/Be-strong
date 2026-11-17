@@ -16,6 +16,8 @@ export const EXERCISE_TYPES = [
   'duration',
   'distance_duration',
   'weight_distance',
+  /** Cardio-toestel: tijd + stand (weerstand/niveau 0–20). De stand wordt bewaard in het veld reps. */
+  'duration_level',
 ] as const;
 export type ExerciseType = (typeof EXERCISE_TYPES)[number];
 

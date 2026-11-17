@@ -6,6 +6,8 @@ interface NumberInputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, '
   onValue: (v: number | null) => void;
   /** Gehele getallen (reps) of decimalen (kg). */
   integer?: boolean;
+  /** Hoogste toegelaten waarde; meer typen wordt afgekapt (bv. stand 20). */
+  max?: number;
 }
 
 /** Gedeelde stijl van de getalvelden: 44px hoog (duimvriendelijk), gecentreerd. */
@@ -24,7 +26,7 @@ const show = (v: number | null) => (v === null ? '' : toComma(v));
 
 /** Numeriek veld met decimaal toetsenbord op iPhone. Accepteert komma én punt. */
 export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(function NumberInput(
-  { value, onValue, integer = false, className = '', ...rest },
+  { value, onValue, integer = false, max, className = '', ...rest },
   ref,
 ) {
   const [text, setText] = useState(show(value));
@@ -47,8 +49,14 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
       onChange={(e) => {
         const raw = e.target.value;
         if (!/^\d*[.,]?\d*$/.test(raw)) return;
+        const n = parse(raw, integer);
+        if (max !== undefined && n !== null && n > max) {
+          setText(show(max));
+          onValue(max);
+          return;
+        }
         setText(raw);
-        onValue(parse(raw, integer));
+        onValue(n);
       }}
       onFocus={(e) => e.target.select()}
       className={`${FIELD} ${className}`}
@@ -58,7 +66,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(functi
 });
 
 /** Tijd-invoer als mm:ss (of seconden). */
-export function DurationInput({ value, onValue, className = '', ...rest }: Omit<NumberInputProps, 'integer'>) {
+export function DurationInput({ value, onValue, minutes = false, className = '', ...rest }: Omit<NumberInputProps, 'integer' | 'max'> & { minutes?: boolean }) {
   const fmt = (v: number | null) => (v === null ? '' : `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}`);
   const [text, setText] = useState(fmt(value));
   useEffect(() => {
@@ -69,7 +77,8 @@ export function DurationInput({ value, onValue, className = '', ...rest }: Omit<
     if (!t) return onValue(null);
     const m = /^(\d+)(?:[:.,](\d{1,2}))?$/.exec(t);
     if (!m) return setText(fmt(value));
-    const sec = m[2] !== undefined ? Number(m[1]) * 60 + Number(m[2]) : Number(m[1]);
+    // "12:30" = 12 min 30 s. Eén getal: minuten bij cardio ("30" = 30:00), anders seconden.
+    const sec = m[2] !== undefined ? Number(m[1]) * 60 + Number(m[2]) : Number(m[1]) * (minutes ? 60 : 1);
     onValue(sec);
   };
   return (

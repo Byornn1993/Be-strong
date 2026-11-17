@@ -12,7 +12,7 @@ import { deleteWorkout, saveTemplate, saveWorkout } from '@/lib/db/repo';
 import type { Workout } from '@/lib/db/types';
 import { dayKey, formatLongDate, formatTime, isoToTimeInput, localInputToIso, toLocalIso } from '@/domain/dates';
 import { detectNewPrs, PR_LABELS } from '@/domain/prs';
-import { columnsFor, setBadge } from '@/domain/exerciseTypes';
+import { columnsFor, durationInMinutes, setBadge } from '@/domain/exerciseTypes';
 import { completedSetCount, workoutVolume } from '@/domain/volume';
 import { formatDuration, formatSet, formatVolume } from '@/domain/format';
 import { emptySet, newTemplateFromWorkout } from '@/features/workout/logic';
@@ -207,9 +207,9 @@ function EditWorkout({ draft, setDraft, onSave, saving }: { draft: Workout; setD
                     <span className="text-center text-sm text-faint">{i + 1}</span>
                     {cols.map((c) =>
                       c.field === 'durationSec' ? (
-                        <DurationInput key={c.field} aria-label={c.label} value={s.durationSec} onValue={(v) => patchSet(we.id, s.id, { durationSec: v })} />
+                        <DurationInput key={c.field} aria-label={c.label} minutes={durationInMinutes(we.exerciseType)} value={s.durationSec} onValue={(v) => patchSet(we.id, s.id, { durationSec: v })} />
                       ) : (
-                        <NumberInput key={c.field} aria-label={c.label} integer={c.field === 'reps'} value={s[c.field]} placeholder={c.label} onValue={(v) => patchSet(we.id, s.id, { [c.field]: v })} />
+                        <NumberInput key={c.field} aria-label={c.label} integer={c.field === 'reps'} max={c.max} value={s[c.field]} placeholder={c.label} onValue={(v) => patchSet(we.id, s.id, { [c.field]: v })} />
                       ),
                     )}
                     <label className="tap flex items-center justify-center" title="Voltooid">

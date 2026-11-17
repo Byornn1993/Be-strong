@@ -6,7 +6,7 @@ export type MuscleFilter = Muscle | 'cardio';
 
 /** Cardio = afstand/tijd-oefeningen (lopen, fietsen, roeien…) en tijd-oefeningen voor het hele lichaam (touwspringen, trap). */
 export function isCardio(e: Pick<Exercise, 'type' | 'primaryMuscle'>): boolean {
-  return e.type === 'distance_duration' || (e.type === 'duration' && e.primaryMuscle === 'full_body');
+  return e.type === 'distance_duration' || e.type === 'duration_level' || (e.type === 'duration' && e.primaryMuscle === 'full_body');
 }
 
 // Oefeningnamen zijn Engels (zoals in Strong). Met deze Nederlandse zoekwoorden vind je ze ook.
