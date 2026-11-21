@@ -49,6 +49,7 @@ Wat er gebouwd en aangepast is, in gewone taal. Nieuwste onderaan. Commitcodes t
 
 **21 november**
 - `CLAUDE.md` (werkafspraken voor Claude) en dit logboek toegevoegd.
+- Project verhuisd naar `Documenten\Persoonlijke apps\Be strong`. `HANDOVER.md` toegevoegd voor de overstap naar Claude Cowork; huisstijlgids gekopieerd naar `docs/huisstijl/`; CLAUDE.md bijgewerkt met vaste werkafspraken en stijlvoorkeuren.
 
 ## Nog niet gedaan / ideeën
 - End-to-end-test met een lokale Supabase (vraagt Docker op de laptop).

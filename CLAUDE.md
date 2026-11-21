@@ -3,15 +3,24 @@
 Dit bestand wordt bij elke sessie in deze map automatisch gelezen. Houd het actueel.
 
 ## Werkmap
-- Werk **altijd** in `C:\Users\Gebruiker\OneDrive\Documenten\Be strong` (git, branch `main`).
+- Werk **altijd en alleen** in `C:\Users\Gebruiker\OneDrive\Documenten\Persoonlijke apps\Be strong` (git, branch `main`). Maak of wijzig geen bestanden buiten deze map (uitzondering: tijdelijke kladbestanden in de scratchpad van de sessie).
+- **Sla alle data van dit project in deze map op** (exports, imports, referentiebestanden, notities). Persoonlijke data hoort in de hoofdmap of in een map die in `.gitignore` staat, nooit in git.
+- De oude map `C:\Users\Gebruiker\OneDrive\Documenten\Be strong` is een verouderde kopie: niet meer gebruiken.
+- Nieuwe sessie zonder voorkennis? Lees eerst [HANDOVER.md](HANDOVER.md).
 - Live: https://byornn1993.github.io/Be-strong/ (repo `Byornn1993/Be-strong`, **publiek**).
-- Wat er al gebeurd is: [docs/LOGBOEK.md](docs/LOGBOEK.md). Voeg na elke afgeronde wijziging een regel toe.
+- Wat er al gebeurd is: [docs/LOGBOEK.md](docs/LOGBOEK.md). Voeg na elke afgeronde wijziging een regel toe; werk HANDOVER.md bij als status, structuur of volgende stappen veranderen.
 
 ## Wie en hoe
-- Eigenaar: Bjorn (nl-BE, geen programmeur). Antwoord in eenvoudig Nederlands.
-- Neem technische beslissingen zelf en bouw door; vraag alleen als je echt vastzit of bij productie-/data-ingrepen.
+- Eigenaar: Bjorn (nl-BE, geen programmeur). **Communiceer altijd in het Nederlands**, kort, duidelijk en in gewone taal (geen jargon zonder uitleg).
+- Neem technische beslissingen zelf en bouw door; vraag alleen als je echt vastzit of bij productie-/data-ingrepen. Geen meerkeuzevragen voor dingen die je zelf kan beslissen.
 - Rapporteer eerlijk wat getest is en wat niet (bv. "niet op echte iPhone getest").
 - Eén logische wijziging per commit, Nederlandse commitboodschap, eindigend met de Co-Authored-By-regel.
+
+## Stijlvoorkeuren
+- **Bjorn huisstijl** voor alle apps: [docs/huisstijl/](docs/huisstijl/) (designprompt + kleurenpalet). Deep Black `#101418`, Slate Blue `#2C3E50`, Muted Gold `#B08D57` (spaarzaam als accent), Champagne `#DCC9A6`, Warm White `#FBF6EE`. Donker thema standaard, licht via de themaknop. Kleuren alleen via CSS-variabelen in `src/index.css`.
+- Lettertype Inter; cijfers met `tabular-nums`; rustige, premium uitstraling met gloedachtergrond en doorschijnende kaarten met gouden rand.
+- Mobile-first: knoppen minstens 44px, duim-bereikbaar, geen kleine tekst (minstens ±12px), elke actie geeft direct zichtbare feedback ("Bewaard ✓", trilling, animatie).
+- Eenvoud boven slimheid: leesbare code die Bjorn later nog kan laten uitleggen. Interface-teksten in het Nederlands, oefeningnamen in het Engels (zoals Strong).
 
 ## Harde regels
 - **Supabase-secret key, databasewachtwoord en Bjorns wachtwoorden: nooit vragen, nooit invullen.** De publishable key mag publiek.

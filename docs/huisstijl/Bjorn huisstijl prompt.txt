@@ -1,0 +1,154 @@
+BJORN HUISSTIJL – DESIGNPROMPT VOOR AL MIJN APPS
+(gebaseerd op de redesign van Bjorn Finance, v33 t/m v37)
+
+Je bent een ervaren UI/UX-designer en front-end developer. Pas de huisstijl hieronder toe op deze applicatie. Het doel is een rustige, premium, professionele uitstraling: donker en elegant met een warm goudaccent, in dezelfde stijl als mijn app Bjorn Finance.
+
+==================================================
+1. BELANGRIJKSTE REGELS
+==================================================
+- Dit is ALLEEN een visuele redesign. Behoud alle bestaande functionaliteit, berekeningen, database, logins en gegevens volledig.
+- Voer geen databasewijzigingen uit voor een visuele verbetering.
+- Verander geen rekenregels of teksten met betekenis, tenzij ik dat vraag.
+- Leg alle kleuren vast als CSS-variabelen (tokens) op :root. Gebruik nergens losse kleurcodes in de componenten.
+- Maak eerst een back-up van de bestanden die je aanpast.
+- Werk zelfstandig door alle fases. Test daarna zelf: elke pagina op desktop en op iPhone-breedte (390px), in donker en licht.
+- Gebruikt de app een service worker? Verhoog dan de cache-naam na elke wijziging.
+- Antwoord in het Nederlands, kort en duidelijk. Ik ben geen programmeur.
+
+==================================================
+2. KLEURENPALET
+==================================================
+(Plak bij deze prompt ook de afbeelding "Bjorn huisstijl kleurenpalet.png".
+Daarop staan de vijf kleuren als vlakken van links naar rechts, in deze volgorde.)
+
+ ┌──────────────┬──────────────┬──────────────┬──────────────┬──────────────┐
+ │  Deep Black  │  Slate Blue  │  Muted Gold  │  Champagne   │  Warm White  │
+ │   #101418    │   #2C3E50    │   #B08D57    │   #DCC9A6    │   #FBF6EE    │
+ │ achtergrond  │   kaarten    │    accent    │  secundaire  │  hoofdtekst  │
+ │  zijbalk     │              │   knoppen    │    tekst     │              │
+ └──────────────┴──────────────┴──────────────┴──────────────┴──────────────┘
+
+Deep Black   #101418  achtergrond, zijbalk, onderste menu
+Slate Blue   #2C3E50  kaarten
+Muted Gold   #B08D57  accent, primaire knoppen, belangrijke cijfers
+Champagne    #DCC9A6  secundaire tekst, randen (in lage doorzichtigheid)
+Warm White   #FBF6EE  hoofdtekst
+
+Verhouding: vooral Deep Black en Slate Blue (rust), Warm White voor tekst,
+Champagne voor details, en Muted Gold spaarzaam als accent. Goud valt op omdat het weinig voorkomt.
+
+Donker thema (STANDAARD):
+:root{
+  --bg:#101418; --surface:#2C3E50; --surface-2:#243445; --input:#22313F;
+  --line:rgba(220,201,166,.17); --line-2:rgba(220,201,166,.09);
+  --fg:#FBF6EE; --muted:#CBB994; --champ:#DCC9A6;
+  --accent:#B08D57; --accent-fg:#101418; --accent-soft:rgba(176,141,87,.18);
+  --pos:#8DBF98; --neg:#E0907E; --warn:#D9AE63;
+  --pos-soft:rgba(141,191,152,.15); --neg-soft:rgba(224,144,126,.15);
+  --c1:#8FA9C2; --c2:#DCC9A6; --c3:#B08D57; --c4:#7C8FA3; --c5:#9DB59A; --c6:#D08A78;  /* grafiekkleuren */
+  --shadow:0 1px 2px rgba(0,0,0,.22); --side:#101418; color-scheme:dark;
+  --font-display:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-body:'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;
+  --r:14px; --r-sm:10px;
+}
+
+Licht thema (via de themaknop, of "automatisch" als het toestel licht staat):
+:root[data-theme="light"]  en  @media (prefers-color-scheme: light){ :root:not([data-theme]){ ... } }
+  --bg:#F6F1E8; --surface:#FFFDF9; --surface-2:#F3ECE0; --input:#FFFFFF;
+  --line:#E4D9C6; --line-2:#EEE6D8;
+  --fg:#101418; --muted:#6E6253; --champ:#B08D57;
+  --accent:#8E6E3E; --accent-fg:#FBF6EE; --accent-soft:#F1E7D4;
+  --pos:#4E7F5A; --neg:#A9503E; --warn:#A57524; --pos-soft:#E4EFE4; --neg-soft:#F6E2DC;
+  --c1:#2C3E50; --c2:#C9AE7E; --c3:#B08D57; --c4:#7C8FA3; --c5:#7E9A7A; --c6:#B5654F;
+  --shadow:0 1px 2px rgba(16,20,24,.05),0 4px 14px rgba(16,20,24,.04); --side:#FBF6EE; color-scheme:light
+
+Positief = zacht groen, negatief = zacht koraalrood. Gebruik nooit fel rood of fel groen.
+
+==================================================
+3. TYPOGRAFIE
+==================================================
+- Lettertype: Inter (Google Fonts, gewichten 400, 500, 600 en 700), voor koppen en tekst.
+- body: 15px, line-height 1.45, -webkit-font-smoothing:antialiased, font-feature-settings:"cv11","ss01".
+- h1: 27px, 700, letter-spacing -.025em
+- h2: 15.5px, 600, letter-spacing -.01em
+- Labels: 11.5px, hoofdletters, letter-spacing .07em, kleur --muted, 600
+- Bedragen en cijfers: font-variant-numeric:tabular-nums, grote cijfers letter-spacing -.025em.
+
+==================================================
+4. COMPONENTEN
+==================================================
+Navigatie
+- Desktop (vanaf 900px): vaste zijbalk links, 240px breed, achtergrond --side, rechterrand 1px --line-2.
+  Bovenaan het app-logo (afbeelding 38px, afgeronde hoeken 10px) met de app-naam en een korte ondertitel.
+- Actief menu-item: achtergrond --accent-soft, tekst --fg, een gouden streep links (box-shadow: inset 3px 0 0 var(--accent)) en een gouden icoon.
+- Hover: heel lichte champagne-tint (color-mix champ 7%).
+- Mobiel: onderste menubalk met achtergrond --side. Het actieve item heeft witte tekst en een gouden icoon.
+  Een eventuele ronde "+"-knop is goud, met een zachte gouden schaduw.
+- Iconen: lijn-iconen in Lucide-stijl (stroke 2, afgeronde uiteinden), 18–22px.
+
+Kaarten
+- Achtergrond --surface, rand 1px --line-2, radius 14px, padding 16–18px, geen zware schaduwen.
+
+KPI-tegels
+- Waarde in --fg, positieve waarde in goud (--accent), negatieve waarde in --neg.
+- De belangrijkste tegel (bij mij "Vrije cashflow") krijgt een subtiel gouden accent:
+  achtergrond als verloop van 14% goud naar --surface, gouden rand op 50%, een dunne gouden lijn bovenaan (inset 0 2px 0) en een gouden label en waarde.
+
+Knoppen
+- Primair: gouden achtergrond, donkere tekst. Bij hover iets lichter (color-mix).
+- Gewone knop: rand --line. Bij hover een gouden rand. Zachte overgang van 0.15s.
+- Ghost-knop: zonder rand.
+- Filterchips: geselecteerd = goud.
+
+Invoervelden
+- Achtergrond --input, rand --line, radius 12px, hoogte 42–48px.
+
+Voortgangsbalken en grafieken
+- Dun: balken 6px, grote balken 10px, volledig afgerond.
+  Spoor in champagne op 12% (color-mix), vulling goud of een grafiekkleur.
+- Rasterlijnen in grafieken: --line-2, heel subtiel.
+
+Overlays
+- Achtergrond van popups en schermen: rgba(8,10,12,.6). Foto-viewer: .88.
+
+Links
+- a{color:var(--accent)}. Knoppen die als link gemaakt zijn, houden hun knopkleur (geen paarse "bezochte link"-kleur).
+
+Tabellen
+- Kopregel in --surface-2, rijen gescheiden door --line-2.
+- De huidige maand of rij: lichte gouden tint.
+- Brede tabellen scrollen horizontaal. De eerste kolom(men) blijven vast staan.
+
+==================================================
+5. THEMA-KNOP
+==================================================
+- De keuze wordt per toestel bewaard in localStorage. De standaard is donker.
+- Elke tik op de knop gaat een stap verder: automatisch (zoals het toestel) → licht → donker.
+- Het label toont de huidige stand: "Thema: donker", "Thema: licht" of "Thema: automatisch", met een zon-icoon. Bij elke wissel verschijnt een korte melding.
+- De knop moet op ELK scherm bereikbaar zijn: in de zijbalk op desktop, en op mobiel op een vaste pagina (bijvoorbeeld in een blok "Gegevens en account" naast Exporteren en Afmelden).
+- Voorkom een witte flits bij het laden: zet in de <head> meteen background:#101418 en color:#FBF6EE, en <meta name="theme-color" content="#101418">.
+- Een eventueel manifest (PWA): background_color en theme_color "#101418".
+
+==================================================
+6. APP-ICOON (OPTIONEEL)
+==================================================
+- Een zwart/donker icoon zonder gekleurde rand, met het symbool van de app groot in het midden.
+- Gebruik hetzelfde icoon als logo in de zijbalk en op het inlogscherm.
+- Verhoog het versienummer achter de icoon-links (?v=...), zodat telefoons het nieuwe icoon ophalen.
+
+==================================================
+7. RESPONSIVE EN KWALITEIT
+==================================================
+- Vanaf 900px: zijbalk. Daaronder: onderste menu.
+- Werkt op 390px (iPhone) zonder horizontaal scrollen van de pagina. Alleen tabellen mogen zelf scrollen.
+- Voldoende contrast. Nergens tekst in --muted op een gouden achtergrond.
+- Consistent op alle pagina's: zelfde koppen, kaarten, knoppen en afstanden.
+
+==================================================
+8. WERKWIJZE
+==================================================
+Fase 1: maak een back-up en zet de kleurtokens en Inter op hun plaats.
+Fase 2: pas navigatie, kaarten, knoppen, invoervelden, KPI's, balken, grafieken en overlays aan.
+Fase 3: zet de themaknop (donker standaard) op desktop en mobiel.
+Fase 4: test elke pagina op desktop en op 390px, in donker en licht. Controleer ook popups en formulieren.
+Fase 5: zet de app online, controleer de live versie en vertel mij in gewone taal wat er veranderd is en wat ik moet doen (bijvoorbeeld de app op mijn iPhone sluiten en opnieuw openen).
